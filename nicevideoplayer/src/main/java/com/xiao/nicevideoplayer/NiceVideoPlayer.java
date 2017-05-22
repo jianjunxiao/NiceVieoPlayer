@@ -393,7 +393,10 @@ public class NiceVideoPlayer extends FrameLayout
         this.removeView(mContainer);
         ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext)
                 .findViewById(android.R.id.content);
-        contentView.addView(mContainer);
+        LayoutParams params = new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        contentView.addView(mContainer, params);
 
         mPlayerState = PLAYER_FULL_SCREEN;
         mController.setControllerState(mPlayerState, mCurrentState);
