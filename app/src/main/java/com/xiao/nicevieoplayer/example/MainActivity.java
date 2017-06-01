@@ -39,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    @Override
+    protected void onStop() {
+        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+        super.onStop();
+    }
+
     public void enterTinyWindow(View view) {
         if (mNiceVideoPlayer.isPlaying()
                 || mNiceVideoPlayer.isBufferingPlaying()

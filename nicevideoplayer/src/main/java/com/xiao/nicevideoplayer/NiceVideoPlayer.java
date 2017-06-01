@@ -337,7 +337,7 @@ public class NiceVideoPlayer extends FrameLayout
         @Override
         public boolean onInfo(MediaPlayer mp, int what, int extra) {
             if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                // 播放器渲染第一帧
+                // 播放器开始渲染
                 mCurrentState = STATE_PLAYING;
                 mController.setControllerState(mPlayerState, mCurrentState);
                 LogUtil.d("onInfo ——> MEDIA_INFO_VIDEO_RENDERING_START：STATE_PLAYING");
@@ -380,6 +380,8 @@ public class NiceVideoPlayer extends FrameLayout
 
     /**
      * 全屏，将mContainer(内部包含mTextureView和mController)从当前容器中移除，并添加到android.R.content中.
+     * 切换横屏时需要在manifest的activity标签下添加android:configChanges="orientation|keyboardHidden|screenSize"配置，
+     * 以避免Activity重新走生命周期
      */
     @Override
     public void enterFullScreen() {
@@ -405,6 +407,8 @@ public class NiceVideoPlayer extends FrameLayout
 
     /**
      * 退出全屏，移除mTextureView和mController，并添加到非全屏的容器中。
+     * 切换竖屏时需要在manifest的activity标签下添加android:configChanges="orientation|keyboardHidden|screenSize"配置，
+     * 以避免Activity重新走生命周期.
      *
      * @return true退出全屏.
      */
