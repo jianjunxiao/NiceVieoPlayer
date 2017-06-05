@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         mNiceVideoPlayer = (NiceVideoPlayer) findViewById(R.id.nice_video_player);
+        mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.PLAYER_TYPE_IJK);
         mNiceVideoPlayer.setUp("http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-33-30.mp4", null);
         NiceVideoPlayerController controller = new NiceVideoPlayerController(this);
         controller.setTitle("办公室小野开番外了，居然在办公室开澡堂！老板还点赞？");
@@ -31,13 +32,13 @@ public class MainActivity extends AppCompatActivity {
         mNiceVideoPlayer.setController(controller);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (NiceVideoPlayerManager.instance().onBackPressd()) {
-            return;
-        }
-        super.onBackPressed();
+@Override
+public void onBackPressed() {
+    if (NiceVideoPlayerManager.instance().onBackPressd()) {
+        return;
     }
+    super.onBackPressed();
+}
 
     @Override
     protected void onStop() {

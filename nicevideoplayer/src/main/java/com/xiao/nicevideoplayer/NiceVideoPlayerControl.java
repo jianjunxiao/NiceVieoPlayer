@@ -25,8 +25,8 @@ public interface NiceVideoPlayerControl {
     boolean isTinyWindow();
     boolean isNormal();
 
-    int getDuration();
-    int getCurrentPosition();
+    long getDuration();
+    long getCurrentPosition();
     int getBufferPercentage();
 
     void enterFullScreen();

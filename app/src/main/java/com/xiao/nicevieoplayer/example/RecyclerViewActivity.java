@@ -32,20 +32,20 @@ public class RecyclerViewActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         VideoAdapter adapter = new VideoAdapter(this, getVideoList());
         mRecyclerView.setAdapter(adapter);
-        mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
-            @Override
-            public void onChildViewAttachedToWindow(View view) {
+mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+    @Override
+    public void onChildViewAttachedToWindow(View view) {
 
-            }
+    }
 
-            @Override
-            public void onChildViewDetachedFromWindow(View view) {
-                NiceVideoPlayer niceVideoPlayer = (NiceVideoPlayer) view.findViewById(R.id.nice_video_player);
-                if (niceVideoPlayer != null) {
-                    niceVideoPlayer.release();
-                }
-            }
-        });
+    @Override
+    public void onChildViewDetachedFromWindow(View view) {
+        NiceVideoPlayer niceVideoPlayer = (NiceVideoPlayer) view.findViewById(R.id.nice_video_player);
+        if (niceVideoPlayer != null) {
+            niceVideoPlayer.release();
+        }
+    }
+});
     }
 
     public List<Video> getVideoList() {

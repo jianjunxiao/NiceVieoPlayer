@@ -11,14 +11,15 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.Map;
+
+import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
+import tv.danmaku.ijk.media.player.IMediaPlayer;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 /**
  * Created by XiaoJianjun on 2017/4/28.
@@ -48,6 +49,10 @@ public class NiceVideoPlayer extends FrameLayout
     public static final int PLAYER_FULL_SCREEN = 11;   // 全屏播放器
     public static final int PLAYER_TINY_WINDOW = 12;   // 小窗口播放器
 
+    public static final int PLAYER_TYPE_IJK = 111;      // IjkPlayer
+    public static final int PLAYER_TYPE_NATIVE = 222;   // Android原生MediaPlayer
+
+    private int mPlayerType = PLAYER_TYPE_IJK;
     private int mCurrentState = STATE_IDLE;
     private int mPlayerState = PLAYER_NORMAL;
 
@@ -58,7 +63,7 @@ public class NiceVideoPlayer extends FrameLayout
     private SurfaceTexture mSurfaceTexture;
     private String mUrl;
     private Map<String, String> mHeaders;
-    private MediaPlayer mMediaPlayer;
+    private IMediaPlayer mMediaPlayer;
 
     private int mBufferPercentage;
 
@@ -94,6 +99,15 @@ public class NiceVideoPlayer extends FrameLayout
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         mContainer.addView(mController, params);
+    }
+
+    /**
+     * 设置播放器类型
+     *
+     * @param playerType IjkPlayer or MediaPlayer.
+     */
+    public void setPlayerType(int playerType) {
+        mPlayerType = playerType;
     }
 
     @Override
@@ -209,12 +223,12 @@ public class NiceVideoPlayer extends FrameLayout
     }
 
     @Override
-    public int getDuration() {
+    public long getDuration() {
         return mMediaPlayer != null ? mMediaPlayer.getDuration() : 0;
     }
 
     @Override
-    public int getCurrentPosition() {
+    public long getCurrentPosition() {
         return mMediaPlayer != null ? mMediaPlayer.getCurrentPosition() : 0;
     }
 
@@ -225,8 +239,15 @@ public class NiceVideoPlayer extends FrameLayout
 
     private void initMediaPlayer() {
         if (mMediaPlayer == null) {
-            mMediaPlayer = new MediaPlayer();
-
+            switch (mPlayerType) {
+                case PLAYER_TYPE_NATIVE:
+                    mMediaPlayer = new AndroidMediaPlayer();
+                    break;
+                case PLAYER_TYPE_IJK:
+                default:
+                    mMediaPlayer = new IjkMediaPlayer();
+                    break;
+            }
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
 
@@ -291,10 +312,10 @@ public class NiceVideoPlayer extends FrameLayout
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
     }
 
-    private MediaPlayer.OnPreparedListener mOnPreparedListener
-            = new MediaPlayer.OnPreparedListener() {
+    private IMediaPlayer.OnPreparedListener mOnPreparedListener
+            = new IMediaPlayer.OnPreparedListener() {
         @Override
-        public void onPrepared(MediaPlayer mp) {
+        public void onPrepared(IMediaPlayer mp) {
             mp.start();
             mCurrentState = STATE_PREPARED;
             mController.setControllerState(mPlayerState, mCurrentState);
@@ -302,18 +323,18 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private MediaPlayer.OnVideoSizeChangedListener mOnVideoSizeChangedListener
-            = new MediaPlayer.OnVideoSizeChangedListener() {
+    private IMediaPlayer.OnVideoSizeChangedListener mOnVideoSizeChangedListener
+            = new IMediaPlayer.OnVideoSizeChangedListener() {
         @Override
-        public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+        public void onVideoSizeChanged(IMediaPlayer mp, int width, int height, int sar_num, int sar_den) {
             LogUtil.d("onVideoSizeChanged ——> width：" + width + "，height：" + height);
         }
     };
 
-    private MediaPlayer.OnCompletionListener mOnCompletionListener
-            = new MediaPlayer.OnCompletionListener() {
+    private IMediaPlayer.OnCompletionListener mOnCompletionListener
+            = new IMediaPlayer.OnCompletionListener() {
         @Override
-        public void onCompletion(MediaPlayer mp) {
+        public void onCompletion(IMediaPlayer mp) {
             mCurrentState = STATE_COMPLETED;
             mController.setControllerState(mPlayerState, mCurrentState);
             LogUtil.d("onCompletion ——> STATE_COMPLETED");
@@ -321,10 +342,10 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private MediaPlayer.OnErrorListener mOnErrorListener
-            = new MediaPlayer.OnErrorListener() {
+    private IMediaPlayer.OnErrorListener mOnErrorListener
+            = new IMediaPlayer.OnErrorListener() {
         @Override
-        public boolean onError(MediaPlayer mp, int what, int extra) {
+        public boolean onError(IMediaPlayer mp, int what, int extra) {
             mCurrentState = STATE_ERROR;
             mController.setControllerState(mPlayerState, mCurrentState);
             LogUtil.d("onError ——> STATE_ERROR ———— what：" + what);
@@ -332,16 +353,16 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private MediaPlayer.OnInfoListener mOnInfoListener
-            = new MediaPlayer.OnInfoListener() {
+    private IMediaPlayer.OnInfoListener mOnInfoListener
+            = new IMediaPlayer.OnInfoListener() {
         @Override
-        public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        public boolean onInfo(IMediaPlayer mp, int what, int extra) {
             if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
                 // 播放器开始渲染
                 mCurrentState = STATE_PLAYING;
                 mController.setControllerState(mPlayerState, mCurrentState);
                 LogUtil.d("onInfo ——> MEDIA_INFO_VIDEO_RENDERING_START：STATE_PLAYING");
-            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
                 // MediaPlayer暂时不播放，以缓冲更多的数据
                 if (mCurrentState == STATE_PAUSED || mCurrentState == STATE_BUFFERING_PAUSED) {
                     mCurrentState = STATE_BUFFERING_PAUSED;
@@ -351,7 +372,7 @@ public class NiceVideoPlayer extends FrameLayout
                     LogUtil.d("onInfo ——> MEDIA_INFO_BUFFERING_START：STATE_BUFFERING_PLAYING");
                 }
                 mController.setControllerState(mPlayerState, mCurrentState);
-            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+            } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
                 // 填充缓冲区后，MediaPlayer恢复播放/暂停
                 if (mCurrentState == STATE_BUFFERING_PLAYING) {
                     mCurrentState = STATE_PLAYING;
@@ -370,10 +391,10 @@ public class NiceVideoPlayer extends FrameLayout
         }
     };
 
-    private MediaPlayer.OnBufferingUpdateListener mOnBufferingUpdateListener
-            = new MediaPlayer.OnBufferingUpdateListener() {
+    private IMediaPlayer.OnBufferingUpdateListener mOnBufferingUpdateListener
+            = new IMediaPlayer.OnBufferingUpdateListener() {
         @Override
-        public void onBufferingUpdate(MediaPlayer mp, int percent) {
+        public void onBufferingUpdate(IMediaPlayer mp, int percent) {
             mBufferPercentage = percent;
         }
     };

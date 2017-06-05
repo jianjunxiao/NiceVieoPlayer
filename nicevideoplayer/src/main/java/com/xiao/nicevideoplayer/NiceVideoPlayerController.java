@@ -227,6 +227,7 @@ public class NiceVideoPlayerController extends FrameLayout
                 mRestartPause.setImageResource(R.drawable.ic_player_start);
                 mLoadText.setText("正在缓冲...");
                 cancelDismissTopBottomTimer();
+                break;
             case NiceVideoPlayer.STATE_COMPLETED:
                 cancelUpdateProgressTimer();
                 setTopBottomVisible(false);
@@ -270,8 +271,8 @@ public class NiceVideoPlayerController extends FrameLayout
     }
 
     private void updateProgress() {
-        int position = mNiceVideoPlayer.getCurrentPosition();
-        int duration = mNiceVideoPlayer.getDuration();
+        long position = mNiceVideoPlayer.getCurrentPosition();
+        long duration = mNiceVideoPlayer.getDuration();
         int bufferPercentage = mNiceVideoPlayer.getBufferPercentage();
         mSeek.setSecondaryProgress(bufferPercentage);
         int progress = (int) (100f * position / duration);
