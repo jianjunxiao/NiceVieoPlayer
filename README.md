@@ -1,6 +1,6 @@
 # NiceVieoPlayer
-##用IjkPlayer/MediaPlayer + TextureView封装，完美切换全屏、小窗口播放。
-####Usage
+## 用IjkPlayer/MediaPlayer + TextureView封装，完美切换全屏、小窗口播放。
+#### Usage
 下载niceviewoplayer库，在AndroidSutio中作为Mudule添加依赖。
 
 1.在Activity中使用：
@@ -46,7 +46,7 @@ mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttach
 ```
 -keep class tv.danmaku.ijk.media.player.**{*;}
 ```
-####Demo
+#### Demo
 ![](https://github.com/xiaoyanger0825/NiceVieoPlayer/raw/master/images/aa.jpg)
 ![](https://github.com/xiaoyanger0825/NiceVieoPlayer/raw/master/images/bb.jpg)
 ![](https://github.com/xiaoyanger0825/NiceVieoPlayer/raw/master/images/cc.jpg)
