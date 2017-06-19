@@ -27,8 +27,16 @@ public class NiceVideoPlayerManager {
         }
     }
 
-    public NiceVideoPlayer getCurrentNiceVideoPlayer() {
-        return mVideoPlayer;
+    public void pauseNiceVideoPlayer() {
+        if (mVideoPlayer != null && (mVideoPlayer.isPlaying() || mVideoPlayer.isBufferingPlaying())) {
+            mVideoPlayer.pause();
+        }
+    }
+
+    public void restartNiceVideoPlayer() {
+        if (mVideoPlayer != null && (mVideoPlayer.isPaused() || mVideoPlayer.isBufferingPaused())) {
+            mVideoPlayer.restart();
+        }
     }
 
     public void releaseNiceVideoPlayer() {

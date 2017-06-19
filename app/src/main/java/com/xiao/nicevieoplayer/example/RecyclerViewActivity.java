@@ -85,9 +85,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        if (NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer() != null) {
-            NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer().pause();
-        }
+        NiceVideoPlayerManager.instance().pauseNiceVideoPlayer();
         super.onStop();
     }
 
@@ -101,9 +99,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
     @Override
     protected void onRestart() {
-        if (NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer() != null) {
-            NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer().restart();
-        }
+        NiceVideoPlayerManager.instance().restartNiceVideoPlayer();
         super.onRestart();
     }
 
