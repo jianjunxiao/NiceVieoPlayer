@@ -21,7 +21,14 @@ public class NiceVideoPlayerManager {
     }
 
     public void setCurrentNiceVideoPlayer(NiceVideoPlayer videoPlayer) {
-        mVideoPlayer = videoPlayer;
+        if (mVideoPlayer != videoPlayer) {
+            releaseNiceVideoPlayer();
+            mVideoPlayer = videoPlayer;
+        }
+    }
+
+    public NiceVideoPlayer getCurrentNiceVideoPlayer() {
+        return mVideoPlayer;
     }
 
     public void releaseNiceVideoPlayer() {

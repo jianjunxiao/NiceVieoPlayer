@@ -57,14 +57,14 @@ public class NiceVideoPlayer extends FrameLayout
     private int mPlayerState = PLAYER_NORMAL;
 
     private Context mContext;
+    private IMediaPlayer mMediaPlayer;
     private FrameLayout mContainer;
     private TextureView mTextureView;
     private NiceVideoPlayerController mController;
     private SurfaceTexture mSurfaceTexture;
+    private Surface mSurface;
     private String mUrl;
     private Map<String, String> mHeaders;
-    private IMediaPlayer mMediaPlayer;
-
     private int mBufferPercentage;
 
     public NiceVideoPlayer(Context context) {
@@ -112,14 +112,13 @@ public class NiceVideoPlayer extends FrameLayout
 
     @Override
     public void start() {
-        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
-        NiceVideoPlayerManager.instance().setCurrentNiceVideoPlayer(this);
-        if (mCurrentState == STATE_IDLE
-                || mCurrentState == STATE_ERROR
-                || mCurrentState == STATE_COMPLETED) {
+        if (mCurrentState == STATE_IDLE) {
+            NiceVideoPlayerManager.instance().setCurrentNiceVideoPlayer(this);
             initMediaPlayer();
             initTextureView();
             addTextureView();
+        } else {
+            LogUtil.d("NiceVideoPlayer只有在mCurrentState == STATE_IDLE时才能调用start方法.");
         }
     }
 
@@ -128,14 +127,18 @@ public class NiceVideoPlayer extends FrameLayout
         if (mCurrentState == STATE_PAUSED) {
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("STATE_PLAYING");
-        }
-        if (mCurrentState == STATE_BUFFERING_PAUSED) {
+        } else if (mCurrentState == STATE_BUFFERING_PAUSED) {
             mMediaPlayer.start();
             mCurrentState = STATE_BUFFERING_PLAYING;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("STATE_BUFFERING_PLAYING");
+        } else if (mCurrentState == STATE_COMPLETED || mCurrentState == STATE_ERROR) {
+            mMediaPlayer.reset();
+            openMediaPlayer();
+        } else {
+            LogUtil.d("NiceVideoPlayer在mCurrentState == " + mCurrentState + "时不能调用restart()方法.");
         }
     }
 
@@ -144,13 +147,13 @@ public class NiceVideoPlayer extends FrameLayout
         if (mCurrentState == STATE_PLAYING) {
             mMediaPlayer.pause();
             mCurrentState = STATE_PAUSED;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("STATE_PAUSED");
         }
         if (mCurrentState == STATE_BUFFERING_PLAYING) {
             mMediaPlayer.pause();
             mCurrentState = STATE_BUFFERING_PAUSED;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("STATE_BUFFERING_PAUSED");
         }
     }
@@ -288,10 +291,13 @@ public class NiceVideoPlayer extends FrameLayout
     private void openMediaPlayer() {
         try {
             mMediaPlayer.setDataSource(mContext.getApplicationContext(), Uri.parse(mUrl), mHeaders);
-            mMediaPlayer.setSurface(new Surface(mSurfaceTexture));
+            if (mSurface == null) {
+                mSurface = new Surface(mSurfaceTexture);
+            }
+            mMediaPlayer.setSurface(mSurface);
             mMediaPlayer.prepareAsync();
             mCurrentState = STATE_PREPARING;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("STATE_PREPARING");
         } catch (IOException e) {
             e.printStackTrace();
@@ -318,7 +324,7 @@ public class NiceVideoPlayer extends FrameLayout
         public void onPrepared(IMediaPlayer mp) {
             mp.start();
             mCurrentState = STATE_PREPARED;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("onPrepared ——> STATE_PREPARED");
         }
     };
@@ -336,9 +342,8 @@ public class NiceVideoPlayer extends FrameLayout
         @Override
         public void onCompletion(IMediaPlayer mp) {
             mCurrentState = STATE_COMPLETED;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("onCompletion ——> STATE_COMPLETED");
-            NiceVideoPlayerManager.instance().setCurrentNiceVideoPlayer(null);
         }
     };
 
@@ -347,7 +352,7 @@ public class NiceVideoPlayer extends FrameLayout
         @Override
         public boolean onError(IMediaPlayer mp, int what, int extra) {
             mCurrentState = STATE_ERROR;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("onError ——> STATE_ERROR ———— what：" + what);
             return false;
         }
@@ -360,7 +365,7 @@ public class NiceVideoPlayer extends FrameLayout
             if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
                 // 播放器开始渲染
                 mCurrentState = STATE_PLAYING;
-                mController.setControllerState(mPlayerState, mCurrentState);
+                mController.onPlayStateChanged(mCurrentState);
                 LogUtil.d("onInfo ——> MEDIA_INFO_VIDEO_RENDERING_START：STATE_PLAYING");
             } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
                 // MediaPlayer暂时不播放，以缓冲更多的数据
@@ -371,17 +376,17 @@ public class NiceVideoPlayer extends FrameLayout
                     mCurrentState = STATE_BUFFERING_PLAYING;
                     LogUtil.d("onInfo ——> MEDIA_INFO_BUFFERING_START：STATE_BUFFERING_PLAYING");
                 }
-                mController.setControllerState(mPlayerState, mCurrentState);
+                mController.onPlayStateChanged(mCurrentState);
             } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
                 // 填充缓冲区后，MediaPlayer恢复播放/暂停
                 if (mCurrentState == STATE_BUFFERING_PLAYING) {
                     mCurrentState = STATE_PLAYING;
-                    mController.setControllerState(mPlayerState, mCurrentState);
+                    mController.onPlayStateChanged(mCurrentState);
                     LogUtil.d("onInfo ——> MEDIA_INFO_BUFFERING_END： STATE_PLAYING");
                 }
                 if (mCurrentState == STATE_BUFFERING_PAUSED) {
                     mCurrentState = STATE_PAUSED;
-                    mController.setControllerState(mPlayerState, mCurrentState);
+                    mController.onPlayStateChanged(mCurrentState);
                     LogUtil.d("onInfo ——> MEDIA_INFO_BUFFERING_END： STATE_PAUSED");
                 }
             } else {
@@ -413,16 +418,20 @@ public class NiceVideoPlayer extends FrameLayout
         NiceUtil.scanForActivity(mContext)
                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        this.removeView(mContainer);
         ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext)
                 .findViewById(android.R.id.content);
+        if (mPlayerState == PLAYER_TINY_WINDOW) {
+            contentView.removeView(mContainer);
+        } else {
+            this.removeView(mContainer);
+        }
         LayoutParams params = new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         contentView.addView(mContainer, params);
 
         mPlayerState = PLAYER_FULL_SCREEN;
-        mController.setControllerState(mPlayerState, mCurrentState);
+        mController.onPlayerStateChanged(mPlayerState);
         LogUtil.d("PLAYER_FULL_SCREEN");
     }
 
@@ -449,7 +458,7 @@ public class NiceVideoPlayer extends FrameLayout
             this.addView(mContainer, params);
 
             mPlayerState = PLAYER_NORMAL;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayerStateChanged(mPlayerState);
             LogUtil.d("PLAYER_NORMAL");
             return true;
         }
@@ -477,7 +486,7 @@ public class NiceVideoPlayer extends FrameLayout
         contentView.addView(mContainer, params);
 
         mPlayerState = PLAYER_TINY_WINDOW;
-        mController.setControllerState(mPlayerState, mCurrentState);
+        mController.onPlayerStateChanged(mPlayerState);
         LogUtil.d("PLAYER_TINY_WINDOW");
     }
 
@@ -496,7 +505,7 @@ public class NiceVideoPlayer extends FrameLayout
             this.addView(mContainer, params);
 
             mPlayerState = PLAYER_NORMAL;
-            mController.setControllerState(mPlayerState, mCurrentState);
+            mController.onPlayerStateChanged(mPlayerState);
             LogUtil.d("PLAYER_NORMAL");
             return true;
         }
@@ -505,11 +514,21 @@ public class NiceVideoPlayer extends FrameLayout
 
     @Override
     public void release() {
+        if (mPlayerState == PLAYER_FULL_SCREEN) {
+            exitFullScreen();
+        }
+        if (mPlayerState == PLAYER_TINY_WINDOW) {
+            exitTinyWindow();
+        }
         if (mMediaPlayer != null) {
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
         mContainer.removeView(mTextureView);
+        if (mSurface != null) {
+            mSurface.release();
+            mSurface = null;
+        }
         if (mSurfaceTexture != null) {
             mSurfaceTexture.release();
             mSurfaceTexture = null;

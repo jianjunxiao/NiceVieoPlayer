@@ -32,28 +32,42 @@ public class MainActivity extends AppCompatActivity {
         mNiceVideoPlayer.setController(controller);
     }
 
-@Override
-public void onBackPressed() {
-    if (NiceVideoPlayerManager.instance().onBackPressd()) {
-        return;
+    @Override
+    public void onBackPressed() {
+        if (NiceVideoPlayerManager.instance().onBackPressd()) {
+            return;
+        }
+        super.onBackPressed();
     }
-    super.onBackPressed();
-}
 
     @Override
     protected void onStop() {
-        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+        if (NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer() != null) {
+            NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer().pause();
+        }
         super.onStop();
     }
 
+    @Override
+    protected void onRestart() {
+        if (NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer() != null) {
+            NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer().restart();
+        }
+        super.onRestart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // 很重要，在Activity和Fragment的onStop方法中一定要调用，释放的播放器。
+        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+        super.onDestroy();
+    }
+
     public void enterTinyWindow(View view) {
-        if (mNiceVideoPlayer.isPlaying()
-                || mNiceVideoPlayer.isBufferingPlaying()
-                || mNiceVideoPlayer.isPaused()
-                || mNiceVideoPlayer.isBufferingPaused()) {
-            mNiceVideoPlayer.enterTinyWindow();
+        if (mNiceVideoPlayer.isIdle()) {
+            Toast.makeText(this, "要点击播放后才能进入小窗口", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, "要播放后才能进入小窗口", Toast.LENGTH_SHORT).show();
+            mNiceVideoPlayer.enterTinyWindow();
         }
     }
 

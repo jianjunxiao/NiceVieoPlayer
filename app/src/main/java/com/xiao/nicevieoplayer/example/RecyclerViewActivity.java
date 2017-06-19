@@ -32,20 +32,20 @@ public class RecyclerViewActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         VideoAdapter adapter = new VideoAdapter(this, getVideoList());
         mRecyclerView.setAdapter(adapter);
-mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
-    @Override
-    public void onChildViewAttachedToWindow(View view) {
+        mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+            @Override
+            public void onChildViewAttachedToWindow(View view) {
 
-    }
+            }
 
-    @Override
-    public void onChildViewDetachedFromWindow(View view) {
-        NiceVideoPlayer niceVideoPlayer = (NiceVideoPlayer) view.findViewById(R.id.nice_video_player);
-        if (niceVideoPlayer != null) {
-            niceVideoPlayer.release();
-        }
-    }
-});
+            @Override
+            public void onChildViewDetachedFromWindow(View view) {
+                NiceVideoPlayer niceVideoPlayer = (NiceVideoPlayer) view.findViewById(R.id.nice_video_player);
+                if (niceVideoPlayer != null) {
+                    niceVideoPlayer.release();
+                }
+            }
+        });
     }
 
     public List<Video> getVideoList() {
@@ -84,10 +84,33 @@ mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttach
     }
 
     @Override
+    protected void onStop() {
+        if (NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer() != null) {
+            NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer().pause();
+        }
+        super.onStop();
+    }
+
+    @Override
     public void onBackPressed() {
         if (NiceVideoPlayerManager.instance().onBackPressd()) {
             return;
         }
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onRestart() {
+        if (NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer() != null) {
+            NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer().restart();
+        }
+        super.onRestart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // 很重要，在Activity和Fragment的onDestroy方法中一定要调用，释放的播放器。
+        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+        super.onDestroy();
     }
 }

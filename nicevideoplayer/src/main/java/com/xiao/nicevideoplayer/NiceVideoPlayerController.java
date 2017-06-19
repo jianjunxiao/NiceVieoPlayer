@@ -17,6 +17,8 @@ import com.bumptech.glide.Glide;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
+
 /**
  * Created by XiaoJianjun on 2017/4/28.
  * 播放器控制器.
@@ -120,6 +122,10 @@ public class NiceVideoPlayerController extends FrameLayout
         }
     }
 
+    /**
+     * 尽量不要在onClick中直接处理控件的隐藏、显示及各种UI逻辑。
+     * UI相关的逻辑都尽量到{@link #onPlayStateChanged}和{@link #onPlayerStateChanged}中处理.
+     */
     @Override
     public void onClick(View v) {
         if (v == mCenterStart) {
@@ -139,14 +145,13 @@ public class NiceVideoPlayerController extends FrameLayout
                 mNiceVideoPlayer.restart();
             }
         } else if (v == mFullScreen) {
-            if (mNiceVideoPlayer.isNormal()) {
+            if (mNiceVideoPlayer.isNormal() || mNiceVideoPlayer.isTinyWindow()) {
                 mNiceVideoPlayer.enterFullScreen();
             } else if (mNiceVideoPlayer.isFullScreen()) {
                 mNiceVideoPlayer.exitFullScreen();
             }
         } else if (v == mRetry) {
-            mNiceVideoPlayer.release();
-            mNiceVideoPlayer.start();
+            mNiceVideoPlayer.restart();
         } else if (v == mReplay) {
             mRetry.performClick();
         } else if (v == mShare) {
@@ -174,27 +179,53 @@ public class NiceVideoPlayerController extends FrameLayout
         }
     }
 
-    public void setControllerState(int playerState, int playState) {
+    /**
+     * 当播放器的状态发生变化
+     *
+     * @param playerState 播放器的状态：
+     *                    <ul>
+     *                    <li>{@link NiceVideoPlayer#PLAYER_NORMAL}</li>
+     *                    <li>{@link NiceVideoPlayer#PLAYER_FULL_SCREEN}</li>
+     *                    <li>{@link NiceVideoPlayer#PLAYER_TINY_WINDOW}</li>
+     *                    </ul>
+     */
+    public void onPlayerStateChanged(int playerState) {
         switch (playerState) {
             case NiceVideoPlayer.PLAYER_NORMAL:
                 mBack.setVisibility(View.GONE);
-                mFullScreen.setVisibility(View.VISIBLE);
                 mFullScreen.setImageResource(R.drawable.ic_player_enlarge);
                 break;
             case NiceVideoPlayer.PLAYER_FULL_SCREEN:
                 mBack.setVisibility(View.VISIBLE);
-                mFullScreen.setVisibility(View.VISIBLE);
                 mFullScreen.setImageResource(R.drawable.ic_player_shrink);
                 break;
             case NiceVideoPlayer.PLAYER_TINY_WINDOW:
-                mFullScreen.setVisibility(View.GONE);
+                mBack.setVisibility(View.VISIBLE);
                 break;
         }
+    }
+
+    /**
+     * 播放状态发生变化
+     *
+     * @param playState 播放状态：
+     *                  <ul>
+     *                  <li>{@link NiceVideoPlayer#STATE_IDLE}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_PREPARING}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_PREPARED}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_PLAYING}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_PAUSED}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_BUFFERING_PLAYING}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_BUFFERING_PAUSED}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_ERROR}</li>
+     *                  <li>{@link NiceVideoPlayer#STATE_COMPLETED}</li>
+     *                  </ul>
+     */
+    public void onPlayStateChanged(int playState) {
         switch (playState) {
             case NiceVideoPlayer.STATE_IDLE:
                 break;
             case NiceVideoPlayer.STATE_PREPARING:
-                // 只显示准备中动画，其他不显示
                 mImage.setVisibility(View.GONE);
                 mLoading.setVisibility(View.VISIBLE);
                 mLoadText.setText("正在准备...");
@@ -228,23 +259,17 @@ public class NiceVideoPlayerController extends FrameLayout
                 mLoadText.setText("正在缓冲...");
                 cancelDismissTopBottomTimer();
                 break;
-            case NiceVideoPlayer.STATE_COMPLETED:
-                cancelUpdateProgressTimer();
-                setTopBottomVisible(false);
-                mImage.setVisibility(View.VISIBLE);
-                mCompleted.setVisibility(View.VISIBLE);
-                if (mNiceVideoPlayer.isFullScreen()) {
-                    mNiceVideoPlayer.exitFullScreen();
-                }
-                if (mNiceVideoPlayer.isTinyWindow()) {
-                    mNiceVideoPlayer.exitTinyWindow();
-                }
-                break;
             case NiceVideoPlayer.STATE_ERROR:
                 cancelUpdateProgressTimer();
                 setTopBottomVisible(false);
                 mTop.setVisibility(View.VISIBLE);
                 mError.setVisibility(View.VISIBLE);
+                break;
+            case NiceVideoPlayer.STATE_COMPLETED:
+                cancelUpdateProgressTimer();
+                setTopBottomVisible(false);
+                mImage.setVisibility(View.VISIBLE);
+                mCompleted.setVisibility(View.VISIBLE);
                 break;
         }
     }
