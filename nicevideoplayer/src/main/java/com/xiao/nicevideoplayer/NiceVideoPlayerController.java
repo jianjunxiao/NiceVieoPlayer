@@ -420,31 +420,31 @@ public class NiceVideoPlayerController extends FrameLayout
                 float absDeltaX = Math.abs(deltaX);
                 float absDeltaY = Math.abs(deltaY);
                 if (!mNeedChangePosition && !mNeedChangeVolume && !mNeedChangeBrightness) {
-                    if (absDeltaX >= THRESHOLD) {
-                        // 只有在播放、暂停、缓冲的时候能够拖动改变位置
-                        if (mNiceVideoPlayer.isPlaying()
-                                || mNiceVideoPlayer.isBufferingPlaying()
-                                || mNiceVideoPlayer.isPaused()
-                                || mNiceVideoPlayer.isBufferingPaused()) {
+                    // 只有在播放、暂停、缓冲的时候能够拖动改变位置、亮度和声音
+                    if (mNiceVideoPlayer.isPlaying()
+                            || mNiceVideoPlayer.isBufferingPlaying()
+                            || mNiceVideoPlayer.isPaused()
+                            || mNiceVideoPlayer.isBufferingPaused()) {
+                        if (absDeltaX >= THRESHOLD) {
                             cancelUpdateProgressTimer();
                             mNeedChangePosition = true;
                             mGestureDownPosition = mNiceVideoPlayer.getCurrentPosition();
-                        }
-                    } else if (absDeltaY >= THRESHOLD) {
-                        if (mDownX < getWidth() * 0.5f) {
-                            // 左侧改变亮度
-                            mNeedChangeBrightness = true;
-                            try {
-                                mGestureDownBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
-                            } catch (Settings.SettingNotFoundException e) {
-                                e.printStackTrace();
-                                mNeedChangeBrightness = false;
-                                LogUtil.e("获取当前亮度失败", e);
+                        } else if (absDeltaY >= THRESHOLD) {
+                            if (mDownX < getWidth() * 0.5f) {
+                                // 左侧改变亮度
+                                mNeedChangeBrightness = true;
+                                try {
+                                    mGestureDownBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+                                } catch (Settings.SettingNotFoundException e) {
+                                    e.printStackTrace();
+                                    mNeedChangeBrightness = false;
+                                    LogUtil.e("获取当前亮度失败", e);
+                                }
+                            } else {
+                                // 右侧改变声音
+                                mNeedChangeVolume = true;
+                                mGestureDownVolume = mNiceVideoPlayer.getVolume();
                             }
-                        } else {
-                            // 右侧改变声音
-                            mNeedChangeVolume = true;
-                            mGestureDownVolume = mNiceVideoPlayer.getVolume();
                         }
                     }
                 }
