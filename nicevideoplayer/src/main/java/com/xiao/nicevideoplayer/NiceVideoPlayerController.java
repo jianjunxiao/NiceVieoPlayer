@@ -1,13 +1,18 @@
 package com.xiao.nicevideoplayer;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.support.annotation.DrawableRes;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,33 +22,47 @@ import com.bumptech.glide.Glide;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
-
 /**
  * Created by XiaoJianjun on 2017/4/28.
  * 播放器控制器.
  */
 public class NiceVideoPlayerController extends FrameLayout
         implements View.OnClickListener,
-        SeekBar.OnSeekBarChangeListener {
+        SeekBar.OnSeekBarChangeListener, View.OnTouchListener {
 
     private Context mContext;
     private NiceVideoPlayerControl mNiceVideoPlayer;
+
     private ImageView mImage;
     private ImageView mCenterStart;
+
     private LinearLayout mTop;
     private ImageView mBack;
     private TextView mTitle;
+
     private LinearLayout mBottom;
     private ImageView mRestartPause;
     private TextView mPosition;
     private TextView mDuration;
     private SeekBar mSeek;
     private ImageView mFullScreen;
+
     private LinearLayout mLoading;
     private TextView mLoadText;
+
+    private LinearLayout mChangePositon;
+    private TextView mChangePositionCurrent;
+    private ProgressBar mChangePositionProgress;
+
+    private LinearLayout mChangeBrightness;
+    private ProgressBar mChangeBrightnessProgress;
+
+    private LinearLayout mChangeVolume;
+    private ProgressBar mChangeVolumeProgress;
+
     private LinearLayout mError;
     private TextView mRetry;
+
     private LinearLayout mCompleted;
     private TextView mReplay;
     private TextView mShare;
@@ -78,6 +97,16 @@ public class NiceVideoPlayerController extends FrameLayout
         mLoading = (LinearLayout) findViewById(R.id.loading);
         mLoadText = (TextView) findViewById(R.id.load_text);
 
+        mChangePositon = (LinearLayout) findViewById(R.id.change_position);
+        mChangePositionCurrent = (TextView) findViewById(R.id.change_position_current);
+        mChangePositionProgress = (ProgressBar) findViewById(R.id.change_position_progress);
+
+        mChangeBrightness = (LinearLayout) findViewById(R.id.change_brightness);
+        mChangeBrightnessProgress = (ProgressBar) findViewById(R.id.change_brightness_progress);
+
+        mChangeVolume = (LinearLayout) findViewById(R.id.change_volume);
+        mChangeVolumeProgress = (ProgressBar) findViewById(R.id.change_volume_progress);
+
         mError = (LinearLayout) findViewById(R.id.error);
         mRetry = (TextView) findViewById(R.id.retry);
 
@@ -94,6 +123,7 @@ public class NiceVideoPlayerController extends FrameLayout
         mShare.setOnClickListener(this);
         mSeek.setOnSeekBarChangeListener(this);
         this.setOnClickListener(this);
+        this.setOnTouchListener(this);
     }
 
 
@@ -357,9 +387,158 @@ public class NiceVideoPlayerController extends FrameLayout
         if (mNiceVideoPlayer.isBufferingPaused() || mNiceVideoPlayer.isPaused()) {
             mNiceVideoPlayer.restart();
         }
-        int position = (int) (mNiceVideoPlayer.getDuration() * seekBar.getProgress() / 100f);
+        long position = (long) (mNiceVideoPlayer.getDuration() * seekBar.getProgress() / 100f);
         mNiceVideoPlayer.seekTo(position);
         startDismissTopBottomTimer();
+    }
+
+    private float mDownX;
+    private float mDownY;
+    private boolean mNeedChangePosition;
+    private boolean mNeedChangeVolume;
+    private boolean mNeedChangeBrightness;
+    private static final int THRESHOLD = 80;
+    private long mGestureDownPosition;
+    private int mGestureDownBrightness;
+    private int mGestureDownVolume;
+    private long mNewPosition;
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                mDownX = x;
+                mDownY = y;
+                mNeedChangePosition = false;
+                mNeedChangeVolume = false;
+                mNeedChangeBrightness = false;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float deltaX = x - mDownX;
+                float deltaY = y - mDownY;
+                float absDeltaX = Math.abs(deltaX);
+                float absDeltaY = Math.abs(deltaY);
+                if (!mNeedChangePosition && !mNeedChangeVolume && !mNeedChangeBrightness) {
+                    if (absDeltaX >= THRESHOLD) {
+                        // 只有在播放、暂停、缓冲的时候能够拖动改变位置
+                        if (mNiceVideoPlayer.isPlaying()
+                                || mNiceVideoPlayer.isBufferingPlaying()
+                                || mNiceVideoPlayer.isPaused()
+                                || mNiceVideoPlayer.isBufferingPaused()) {
+                            cancelUpdateProgressTimer();
+                            mNeedChangePosition = true;
+                            mGestureDownPosition = mNiceVideoPlayer.getCurrentPosition();
+                        }
+                    } else if (absDeltaY >= THRESHOLD) {
+                        if (mDownX < getWidth() * 0.5f) {
+                            // 左侧改变亮度
+                            mNeedChangeBrightness = true;
+                            try {
+                                mGestureDownBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+                            } catch (Settings.SettingNotFoundException e) {
+                                e.printStackTrace();
+                                mNeedChangeBrightness = false;
+                                LogUtil.e("获取当前亮度失败", e);
+                            }
+                        } else {
+                            // 右侧改变声音
+                            mNeedChangeVolume = true;
+                            mGestureDownVolume = mNiceVideoPlayer.getVolume();
+                        }
+                    }
+                }
+                if (mNeedChangePosition) {
+                    long duration = mNiceVideoPlayer.getDuration();
+                    long toPosition = (long) (mGestureDownPosition + duration * deltaX / getWidth());
+                    mNewPosition = Math.max(0, Math.min(duration, toPosition));
+                    int newProgress = (int) (100f * mNewPosition / duration);
+                    mSeek.setProgress(newProgress);
+                    mPosition.setText(NiceUtil.formatTime(mNewPosition));
+                    showChangePosition(duration, newProgress);
+                }
+                if (mNeedChangeBrightness) {
+                    deltaY = -deltaY;
+                    float deltaBrightness = 255 * deltaY * 3 / getHeight();
+                    float newBrightness = mGestureDownBrightness + deltaBrightness;
+                    newBrightness = Math.max(1, Math.min(newBrightness, 255));
+                    float newBrightnessPercentage = newBrightness / 255f;
+                    WindowManager.LayoutParams params = NiceUtil.scanForActivity(mContext)
+                            .getWindow().getAttributes();
+                    params.screenBrightness = newBrightnessPercentage;
+                    NiceUtil.scanForActivity(mContext).getWindow().setAttributes(params);
+                    showChangeBrightness(newBrightnessPercentage);
+                }
+                if (mNeedChangeVolume) {
+                    deltaY = -deltaY;
+                    int maxVolume = mNiceVideoPlayer.getMaxVolume();
+                    int deltaVolume = (int) (maxVolume * deltaY * 3 / getHeight());
+                    int newVolume = mGestureDownVolume + deltaVolume;
+                    newVolume = Math.max(0, Math.min(maxVolume, newVolume));
+                    mNiceVideoPlayer.setVolume(newVolume);
+                    int newVolumeProgress = (int) (100f * newVolume / maxVolume);
+                    showChangeVolume(newVolumeProgress);
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+                if (mNeedChangePosition) {
+                    mNiceVideoPlayer.seekTo(mNewPosition);
+                    hideChangePosition();
+                    startUpdateProgressTimer();
+                    return true;
+                }
+                if (mNeedChangeBrightness) {
+                    hideChangeBrightness();
+                    return true;
+                }
+                if (mNeedChangeVolume) {
+                    hideChangeVolume();
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
+
+    private void hideChangeVolume() {
+        mChangeVolume.setVisibility(View.GONE);
+    }
+
+    /**
+     * @param newVolumeProgress 声音进度，取值1 - 100
+     */
+    private void showChangeVolume(int newVolumeProgress) {
+        mChangeVolume.setVisibility(View.VISIBLE);
+        mChangeVolumeProgress.setProgress(newVolumeProgress);
+    }
+
+    private void hideChangeBrightness() {
+        mChangeBrightness.setVisibility(View.GONE);
+    }
+
+    /**
+     * @param newBrightnessPercentage 亮度，取值0 - 1
+     */
+    private void showChangeBrightness(float newBrightnessPercentage) {
+        mChangeBrightness.setVisibility(View.VISIBLE);
+        int progress = (int) (100f * newBrightnessPercentage);
+        mChangeBrightnessProgress.setProgress(progress);
+    }
+
+    /**
+     * @param duration    总时长
+     * @param newProgress 新的进度，取值0 - 100
+     */
+    private void showChangePosition(long duration, int newProgress) {
+        mChangePositon.setVisibility(View.VISIBLE);
+        long newPosition = (long) (duration * newProgress / 100f);
+        mChangePositionCurrent.setText(NiceUtil.formatTime(newPosition));
+        mChangePositionProgress.setProgress(newProgress);
+    }
+
+    private void hideChangePosition() {
+        mChangePositon.setVisibility(View.GONE);
     }
 
     /**

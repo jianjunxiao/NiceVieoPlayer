@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+    <!--底图-->
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
@@ -9,7 +10,7 @@
         android:background="@drawable/img_default"
         android:scaleType="fitXY"
         android:visibility="visible"/>
-
+    <!--加载动画-->
     <LinearLayout
         android:id="@+id/loading"
         android:layout_width="match_parent"
@@ -32,24 +33,110 @@
             android:textColor="@android:color/white"
             android:textSize="13sp"/>
     </LinearLayout>
+    <!--改变播放位置-->
+    <LinearLayout
+        android:id="@+id/change_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_radius_4"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone">
 
+        <TextView
+            android:id="@+id/change_position_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textColor="@android:color/white"
+            android:textSize="28sp"/>
+
+        <ProgressBar
+            android:id="@+id/change_position_progress"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="100dp"
+            android:layout_height="2dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progressDrawable="@drawable/pb_change"/>
+    </LinearLayout>
+    <!--改变亮度-->
+    <LinearLayout
+        android:id="@+id/change_brightness"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_radius_4"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_palyer_brightness"/>
+
+        <ProgressBar
+            android:id="@+id/change_brightness_progress"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="100dp"
+            android:layout_height="2dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progressDrawable="@drawable/pb_change"/>
+
+    </LinearLayout>
+    <!--改变声音-->
+    <LinearLayout
+        android:id="@+id/change_volume"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_radius_4"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_palyer_volume"/>
+
+        <ProgressBar
+            android:id="@+id/change_volume_progress"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="100dp"
+            android:layout_height="2dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="8dp"
+            android:max="100"
+            android:progressDrawable="@drawable/pb_change"/>
+
+    </LinearLayout>
+    <!--播放完成-->
     <LinearLayout
         android:id="@+id/completed"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#99333333"
-        android:visibility="gone"
+        android:background="#6c0b0b0b"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/replay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_player_replay"
-            android:text="重新播放"
-            android:padding="8dp"
             android:drawablePadding="4dp"
+            android:padding="8dp"
+            android:text="重新播放"
             android:textColor="@android:color/white"
             android:textSize="13sp"/>
 
@@ -58,14 +145,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="64dp"
-            android:padding="8dp"
-            android:drawablePadding="4dp"
             android:drawableLeft="@drawable/ic_palyer_share"
+            android:drawablePadding="4dp"
+            android:padding="8dp"
             android:text="分享"
             android:textColor="@android:color/white"
             android:textSize="13sp"/>
     </LinearLayout>
-
+    <!--播放错误-->
     <LinearLayout
         android:id="@+id/error"
         android:layout_width="match_parent"
@@ -96,7 +183,7 @@
             android:textColor="@android:color/white"
             android:textSize="13sp"/>
     </LinearLayout>
-
+    <!--顶部控制区-->
     <LinearLayout
         android:id="@+id/top"
         android:layout_width="match_parent"
@@ -123,7 +210,7 @@
             android:textColor="@android:color/white"
             android:textSize="14sp"/>
     </LinearLayout>
-
+    <!--底部控制区-->
     <LinearLayout
         android:id="@+id/bottom"
         android:layout_width="match_parent"
@@ -183,7 +270,7 @@
             android:layout_height="24dp"
             android:src="@drawable/ic_player_enlarge"/>
     </LinearLayout>
-
+    <!--中间开始播放按钮-->
     <ImageView
         android:id="@+id/center_start"
         android:layout_width="wrap_content"

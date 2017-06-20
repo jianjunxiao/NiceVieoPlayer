@@ -1,5 +1,7 @@
 package com.xiao.nicevideoplayer;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -8,7 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.LinearInterpolator;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -40,7 +45,7 @@ public class NiceUtil {
      * @param context
      * @return AppCompatActivity if it's not null
      */
-    public static AppCompatActivity getAppCompActivity(Context context) {
+    private static AppCompatActivity getAppCompActivity(Context context) {
         if (context == null) return null;
         if (context instanceof AppCompatActivity) {
             return (AppCompatActivity) context;

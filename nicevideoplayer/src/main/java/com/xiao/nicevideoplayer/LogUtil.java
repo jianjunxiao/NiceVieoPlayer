@@ -15,7 +15,7 @@ public class LogUtil {
     }
 
     public static void i(String message) {
-        Log.d(TAG, message);
+        Log.i(TAG, message);
     }
 
     public static void e(String message, Throwable throwable) {

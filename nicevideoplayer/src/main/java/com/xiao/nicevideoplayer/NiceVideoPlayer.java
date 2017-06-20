@@ -57,6 +57,7 @@ public class NiceVideoPlayer extends FrameLayout
     private int mPlayerState = PLAYER_NORMAL;
 
     private Context mContext;
+    private AudioManager mAudioManager;
     private IMediaPlayer mMediaPlayer;
     private FrameLayout mContainer;
     private TextureView mTextureView;
@@ -114,6 +115,7 @@ public class NiceVideoPlayer extends FrameLayout
     public void start() {
         if (mCurrentState == STATE_IDLE) {
             NiceVideoPlayerManager.instance().setCurrentNiceVideoPlayer(this);
+            initAudioManager();
             initMediaPlayer();
             initTextureView();
             addTextureView();
@@ -159,9 +161,16 @@ public class NiceVideoPlayer extends FrameLayout
     }
 
     @Override
-    public void seekTo(int pos) {
+    public void seekTo(long pos) {
         if (mMediaPlayer != null) {
             mMediaPlayer.seekTo(pos);
+        }
+    }
+
+    @Override
+    public void setVolume(int volume) {
+        if (mAudioManager != null) {
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
         }
     }
 
@@ -226,6 +235,22 @@ public class NiceVideoPlayer extends FrameLayout
     }
 
     @Override
+    public int getMaxVolume() {
+        if (mAudioManager != null) {
+            return mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        }
+        return 0;
+    }
+
+    @Override
+    public int getVolume() {
+        if (mAudioManager != null) {
+            return mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+        }
+        return 0;
+    }
+
+    @Override
     public long getDuration() {
         return mMediaPlayer != null ? mMediaPlayer.getDuration() : 0;
     }
@@ -238,6 +263,13 @@ public class NiceVideoPlayer extends FrameLayout
     @Override
     public int getBufferPercentage() {
         return mBufferPercentage;
+    }
+
+    private void initAudioManager() {
+        if (mAudioManager == null) {
+            mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+            mAudioManager.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        }
     }
 
     private void initMediaPlayer() {
@@ -519,6 +551,10 @@ public class NiceVideoPlayer extends FrameLayout
         }
         if (mPlayerState == PLAYER_TINY_WINDOW) {
             exitTinyWindow();
+        }
+        if (mAudioManager != null) {
+            mAudioManager.abandonAudioFocus(null);
+            mAudioManager = null;
         }
         if (mMediaPlayer != null) {
             mMediaPlayer.release();

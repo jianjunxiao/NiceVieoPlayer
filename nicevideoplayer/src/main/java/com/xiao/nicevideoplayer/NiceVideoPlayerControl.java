@@ -9,7 +9,8 @@ public interface NiceVideoPlayerControl {
     void start();
     void restart();
     void pause();
-    void seekTo(int pos);
+    void seekTo(long pos);
+    void setVolume(int volume);
 
     boolean isIdle();
     boolean isPreparing();
@@ -25,6 +26,8 @@ public interface NiceVideoPlayerControl {
     boolean isTinyWindow();
     boolean isNormal();
 
+    int getMaxVolume();
+    int getVolume();
     long getDuration();
     long getCurrentPosition();
     int getBufferPercentage();
