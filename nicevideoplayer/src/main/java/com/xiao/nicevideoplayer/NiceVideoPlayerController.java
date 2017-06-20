@@ -480,6 +480,7 @@ public class NiceVideoPlayerController extends FrameLayout
                     showChangeVolume(newVolumeProgress);
                 }
                 break;
+            case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (mNeedChangePosition) {
                     mNiceVideoPlayer.seekTo(mNewPosition);
