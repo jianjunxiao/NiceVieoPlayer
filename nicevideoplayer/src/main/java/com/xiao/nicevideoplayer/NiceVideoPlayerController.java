@@ -1,6 +1,5 @@
 package com.xiao.nicevideoplayer;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.CountDownTimer;
 import android.provider.Settings;
