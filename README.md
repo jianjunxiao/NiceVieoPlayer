@@ -1,5 +1,8 @@
 # NiceVieoPlayer
-## 用IjkPlayer/MediaPlayer + TextureView封装，完美切换全屏、小窗口播放。
+### Features
+ 用IjkPlayer/MediaPlayer + TextureView封装，可切换IjkPlayer、MediaPlayer.
+ 完美切换小窗口、全屏，可在RecyclerView、ListView中无缝全屏.
+ 手势滑动调节播放进度、亮度、声音.
 ### Usage
 下载niceviewoplayer库，在AndroidSutio中作为Mudule添加依赖。
 
@@ -15,6 +18,19 @@
       mNiceVideoPlayer.setController(controller);
   }
   
+  // 按下Home键暂停播放，回到界面继续播放。
+  @Override
+  protected void onStop() {
+      NiceVideoPlayerManager.instance().pauseNiceVideoPlayer();
+      super.onStop();
+  }
+  
+  @Override
+  protected void onRestart() {
+      NiceVideoPlayerManager.instance().restartNiceVideoPlayer();
+      super.onRestart();
+  }
+  
   // 按返回键
   // 当前是全屏或小窗口，需要先退出全屏或小窗口。
   @Override
@@ -23,6 +39,13 @@
           return;
       }
       super.onBackPressed();
+  }
+  
+  @Override
+  protected void onDestroy() {
+      // 很重要，在Activity和Fragment的onStop方法中一定要调用，释放的播放器。
+      NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
+      super.onDestroy();
   }
   ```
 2.在RecyclerView列表中使用需要监听itemView detach：
