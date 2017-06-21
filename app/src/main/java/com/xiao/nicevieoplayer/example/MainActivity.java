@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.xiao.nicevideoplayer.NiceVideoPlayer;
-import com.xiao.nicevideoplayer.NiceVideoPlayerController;
 import com.xiao.nicevideoplayer.NiceVideoPlayerManager;
+import com.xiao.nicevideoplayer.TxVideoPlayerController;
 import com.xiao.nicevieoplayer.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +26,8 @@ public class MainActivity extends AppCompatActivity {
         mNiceVideoPlayer = (NiceVideoPlayer) findViewById(R.id.nice_video_player);
         mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.PLAYER_TYPE_IJK); // IjkPlayer or MediaPlayer
         mNiceVideoPlayer.setUp("http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-33-30.mp4", null);
-        NiceVideoPlayerController controller = new NiceVideoPlayerController(this);
+//        mNiceVideoPlayer.setUp("http://thegolfgame-1252399946.costj.myqcloud.com/IOS/DynamicVideo/d7fe046aff234018ad7ea72a509b62491492659824.mp4", null);
+        TxVideoPlayerController controller = new TxVideoPlayerController(this);
         controller.setTitle("办公室小野开番外了，居然在办公室开澡堂！老板还点赞？");
         controller.setImage("http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-30-43.jpg");
         mNiceVideoPlayer.setController(controller);

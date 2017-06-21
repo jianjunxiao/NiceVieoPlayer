@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.xiao.nicevideoplayer.NiceVideoPlayerController;
+import com.xiao.nicevideoplayer.TxVideoPlayerController;
 import com.xiao.nicevieoplayer.R;
 import com.xiao.nicevieoplayer.example.adapter.holder.VideoViewHolder;
 import com.xiao.nicevieoplayer.example.bean.Video;
@@ -31,7 +31,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoViewHolder> {
     public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(mContext).inflate(R.layout.item_video, parent, false);
         VideoViewHolder holder = new VideoViewHolder(itemView);
-        NiceVideoPlayerController controller = new NiceVideoPlayerController(mContext);
+        TxVideoPlayerController controller = new TxVideoPlayerController(mContext);
         holder.setController(controller);
         return holder;
     }

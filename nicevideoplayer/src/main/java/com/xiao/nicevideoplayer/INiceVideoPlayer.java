@@ -4,7 +4,7 @@ package com.xiao.nicevideoplayer;
  * Created by XiaoJianjun on 2017/5/5.
  * NiceVideoPlayer抽象接口
  */
-public interface NiceVideoPlayerControl {
+public interface INiceVideoPlayer {
 
     void start();
     void restart();

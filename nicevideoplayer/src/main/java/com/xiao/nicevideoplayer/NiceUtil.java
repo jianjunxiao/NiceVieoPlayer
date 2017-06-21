@@ -1,19 +1,13 @@
 package com.xiao.nicevideoplayer;
 
-import android.animation.Animator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
-import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.LinearInterpolator;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -121,5 +115,32 @@ public class NiceUtil {
         } else {
             return mFormatter.format("%02d:%02d", minutes, seconds).toString();
         }
+    }
+
+    /**
+     * 保存播放位置，以便下次播放时接着上次的位置继续播放.
+     *
+     * @param context
+     * @param url     视频链接url
+     */
+    public static void savePlayPosition(Context context, String url, long position) {
+        context.getSharedPreferences("NICE_VIDEO_PALYER_PLAY_POSITION",
+                Context.MODE_PRIVATE)
+                .edit()
+                .putLong(url, position)
+                .apply();
+    }
+
+    /**
+     * 取出上次保存的播放位置
+     *
+     * @param context
+     * @param url     视频链接url
+     * @return 上次保存的播放位置
+     */
+    public static long getSavedPlayPosition(Context context, String url) {
+        return context.getSharedPreferences("NICE_VIDEO_PALYER_PLAY_POSITION",
+                Context.MODE_PRIVATE)
+                .getLong(url, 0);
     }
 }

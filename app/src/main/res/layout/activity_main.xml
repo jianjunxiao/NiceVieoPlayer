@@ -7,21 +7,12 @@
     android:orientation="vertical"
     tools:context="com.xiao.nicevieoplayer.example.MainActivity">
 
-
-    <LinearLayout
-        android:id="@+id/ll_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <com.xiao.nicevideoplayer.NiceVideoPlayer
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
-        android:layout_weight="1.2"
-        android:orientation="vertical">
-
-        <com.xiao.nicevideoplayer.NiceVideoPlayer
-            android:id="@+id/nice_video_player"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-    </LinearLayout>
+        android:id="@+id/nice_video_player"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"

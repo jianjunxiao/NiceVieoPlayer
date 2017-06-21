@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -26,7 +25,7 @@ import tv.danmaku.ijk.media.player.IjkMediaPlayer;
  * 播放器
  */
 public class NiceVideoPlayer extends FrameLayout
-        implements NiceVideoPlayerControl,
+        implements INiceVideoPlayer,
         TextureView.SurfaceTextureListener {
 
     public static final int STATE_ERROR = -1;          // 播放错误
@@ -60,13 +59,14 @@ public class NiceVideoPlayer extends FrameLayout
     private AudioManager mAudioManager;
     private IMediaPlayer mMediaPlayer;
     private FrameLayout mContainer;
-    private TextureView mTextureView;
+    private NiceTextureView mTextureView;
     private NiceVideoPlayerController mController;
     private SurfaceTexture mSurfaceTexture;
     private Surface mSurface;
     private String mUrl;
     private Map<String, String> mHeaders;
     private int mBufferPercentage;
+    private boolean continueFromLastPosition = true;
 
     public NiceVideoPlayer(Context context) {
         this(context, null);
@@ -94,6 +94,7 @@ public class NiceVideoPlayer extends FrameLayout
 
     public void setController(NiceVideoPlayerController controller) {
         mController = controller;
+        mController.reset();
         mController.setNiceVideoPlayer(this);
         mContainer.removeView(mController);
         LayoutParams params = new LayoutParams(
@@ -109,6 +110,15 @@ public class NiceVideoPlayer extends FrameLayout
      */
     public void setPlayerType(int playerType) {
         mPlayerType = playerType;
+    }
+
+    /**
+     * 是否从上一次的位置继续播放
+     *
+     * @param continueFromLastPosition true从上一次的位置继续播放
+     */
+    public void continueFromLastPosition(boolean continueFromLastPosition) {
+        this.continueFromLastPosition = continueFromLastPosition;
     }
 
     @Override
@@ -297,7 +307,7 @@ public class NiceVideoPlayer extends FrameLayout
 
     private void initTextureView() {
         if (mTextureView == null) {
-            mTextureView = new TextureView(mContext);
+            mTextureView = new NiceTextureView(mContext);
             mTextureView.setSurfaceTextureListener(this);
         }
     }
@@ -306,7 +316,8 @@ public class NiceVideoPlayer extends FrameLayout
         mContainer.removeView(mTextureView);
         LayoutParams params = new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                Gravity.CENTER);
         mContainer.addView(mTextureView, 0, params);
     }
 
@@ -355,6 +366,11 @@ public class NiceVideoPlayer extends FrameLayout
         @Override
         public void onPrepared(IMediaPlayer mp) {
             mp.start();
+            // 从上次的保存位置继续播放.
+            if (continueFromLastPosition) {
+                long savedPlayPosition = NiceUtil.getSavedPlayPosition(mContext, mUrl);
+                mp.seekTo(savedPlayPosition);
+            }
             mCurrentState = STATE_PREPARED;
             mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("onPrepared ——> STATE_PREPARED");
@@ -365,7 +381,8 @@ public class NiceVideoPlayer extends FrameLayout
             = new IMediaPlayer.OnVideoSizeChangedListener() {
         @Override
         public void onVideoSizeChanged(IMediaPlayer mp, int width, int height, int sar_num, int sar_den) {
-            LogUtil.d("onVideoSizeChanged ——> width：" + width + "，height：" + height);
+            LogUtil.d("onVideoSizeChanged ——> width：" + width + "， height：" + height);
+            mTextureView.resetVideoSize(width, height);
         }
     };
 
@@ -394,7 +411,7 @@ public class NiceVideoPlayer extends FrameLayout
             = new IMediaPlayer.OnInfoListener() {
         @Override
         public boolean onInfo(IMediaPlayer mp, int what, int extra) {
-            if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+            if (what == IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
                 // 播放器开始渲染
                 mCurrentState = STATE_PLAYING;
                 mController.onPlayStateChanged(mCurrentState);
@@ -420,6 +437,12 @@ public class NiceVideoPlayer extends FrameLayout
                     mCurrentState = STATE_PAUSED;
                     mController.onPlayStateChanged(mCurrentState);
                     LogUtil.d("onInfo ——> MEDIA_INFO_BUFFERING_END： STATE_PAUSED");
+                }
+            } else if (what == IMediaPlayer.MEDIA_INFO_VIDEO_ROTATION_CHANGED) {
+                // 视频旋转了exttra度，需要恢复
+                if (mTextureView != null) {
+                    mTextureView.setRotation(extra);
+                    LogUtil.d("视频旋转角度：" + extra);
                 }
             } else {
                 LogUtil.d("onInfo ——> what：" + what);
@@ -546,6 +569,9 @@ public class NiceVideoPlayer extends FrameLayout
 
     @Override
     public void release() {
+        // 保存播放位置
+        long savePlayPosition = isCompleted() ? 0 : getCurrentPosition();
+        NiceUtil.savePlayPosition(mContext, mUrl, savePlayPosition);
         if (mPlayerState == PLAYER_FULL_SCREEN) {
             exitFullScreen();
         }
@@ -574,5 +600,6 @@ public class NiceVideoPlayer extends FrameLayout
         }
         mCurrentState = STATE_IDLE;
         mPlayerState = PLAYER_NORMAL;
+        Runtime.getRuntime().gc();
     }
 }
