@@ -9,6 +9,21 @@
 ### Usage
 下载niceviewoplayer库，在AndroidSutio中作为Mudule添加依赖。
 
+或者在Gradle中添加依赖：
+
+```
+allprojects {
+    repositories {
+    ...
+    maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+    compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.5'
+}
+```
+
 1.在Activity中使用：
 ```
  private void init() {
