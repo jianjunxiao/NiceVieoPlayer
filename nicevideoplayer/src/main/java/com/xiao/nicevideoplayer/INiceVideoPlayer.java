@@ -11,6 +11,7 @@ public interface INiceVideoPlayer {
     void pause();
     void seekTo(long pos);
     void setVolume(int volume);
+    void setSpeed(float speed);
 
     boolean isIdle();
     boolean isPreparing();
@@ -31,6 +32,8 @@ public interface INiceVideoPlayer {
     long getDuration();
     long getCurrentPosition();
     int getBufferPercentage();
+    float getSpeed(float speed);
+    long getTcpSpeed();
 
     void enterFullScreen();
     boolean exitFullScreen();

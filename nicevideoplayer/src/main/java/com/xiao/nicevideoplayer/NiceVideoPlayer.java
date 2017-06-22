@@ -49,7 +49,7 @@ public class NiceVideoPlayer extends FrameLayout
     public static final int PLAYER_TINY_WINDOW = 12;   // 小窗口播放器
 
     public static final int PLAYER_TYPE_IJK = 111;      // IjkPlayer
-    public static final int PLAYER_TYPE_NATIVE = 222;   // Android原生MediaPlayer
+    public static final int PLAYER_TYPE_NATIVE = 222;   // MediaPlayer
 
     private int mPlayerType = PLAYER_TYPE_IJK;
     private int mCurrentState = STATE_IDLE;
@@ -119,6 +119,15 @@ public class NiceVideoPlayer extends FrameLayout
      */
     public void continueFromLastPosition(boolean continueFromLastPosition) {
         this.continueFromLastPosition = continueFromLastPosition;
+    }
+
+    @Override
+    public void setSpeed(float speed) {
+        if (mMediaPlayer instanceof IjkMediaPlayer) {
+            ((IjkMediaPlayer) mMediaPlayer).setSpeed(speed);
+        } else {
+            LogUtil.d("只有IjkPlayer才能设置播放速度");
+        }
     }
 
     @Override
@@ -275,6 +284,22 @@ public class NiceVideoPlayer extends FrameLayout
         return mBufferPercentage;
     }
 
+    @Override
+    public float getSpeed(float speed) {
+        if (mMediaPlayer instanceof IjkMediaPlayer) {
+            return ((IjkMediaPlayer) mMediaPlayer).getSpeed(speed);
+        }
+        return 0;
+    }
+
+    @Override
+    public long getTcpSpeed() {
+        if (mMediaPlayer instanceof IjkMediaPlayer) {
+            return ((IjkMediaPlayer) mMediaPlayer).getTcpSpeed();
+        }
+        return 0;
+    }
+
     private void initAudioManager() {
         if (mAudioManager == null) {
             mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
@@ -294,8 +319,6 @@ public class NiceVideoPlayer extends FrameLayout
                     break;
             }
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mMediaPlayer.setScreenOnWhilePlaying(true);
-
             mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
             mMediaPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChangedListener);
             mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
@@ -332,6 +355,8 @@ public class NiceVideoPlayer extends FrameLayout
     }
 
     private void openMediaPlayer() {
+        // 屏幕常量
+        mContainer.setKeepScreenOn(true);
         try {
             mMediaPlayer.setDataSource(mContext.getApplicationContext(), Uri.parse(mUrl), mHeaders);
             if (mSurface == null) {
@@ -393,6 +418,8 @@ public class NiceVideoPlayer extends FrameLayout
             mCurrentState = STATE_COMPLETED;
             mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("onCompletion ——> STATE_COMPLETED");
+            // 清除屏幕常量
+            mContainer.setKeepScreenOn(false);
         }
     };
 
