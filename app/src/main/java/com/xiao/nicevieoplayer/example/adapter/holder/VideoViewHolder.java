@@ -34,7 +34,6 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
                 .placeholder(R.drawable.img_default)
                 .crossFade()
                 .into(mController.imageView());
-
         mVideoPlayer.setController(mController);
         mVideoPlayer.setUp(video.getVideoUrl(), null);
     }

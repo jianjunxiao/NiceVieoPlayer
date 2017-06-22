@@ -2,7 +2,6 @@ package com.xiao.nicevideoplayer;
 
 import android.content.Context;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,7 +34,7 @@ public abstract class NiceVideoPlayerController
     private int mGestureDownVolume;
     private long mNewPosition;
 
-    public NiceVideoPlayerController(@NonNull Context context) {
+    public NiceVideoPlayerController(Context context) {
         super(context);
         mContext = context;
         this.setOnTouchListener(this);

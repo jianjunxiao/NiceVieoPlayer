@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 /**
  * Created by XiaoJianjun on 2017/6/21.
- * 仿腾讯视频播放器控制器
+ * 仿腾讯视频播放器控制器.
  */
 public class TxVideoPlayerController
         extends NiceVideoPlayerController
