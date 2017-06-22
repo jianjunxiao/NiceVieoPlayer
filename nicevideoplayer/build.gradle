@@ -61,7 +61,7 @@ bintray {
     pkg {
         userOrg = 'xiaomark' //自己创建的organization名称
         repo = 'nicevideoplayer'//自己创建的仓库名字
-        name = 'nicevideoplayer'//上传到JCenter的名字,最终引用的名字
+        name = libName //上传到JCenter的名字,最终引用的名字
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ['Apache-2.0']//不能随便写，只能是仓库创建时选择的license type
