@@ -382,7 +382,7 @@ public class NiceVideoPlayer extends FrameLayout
         @Override
         public void onVideoSizeChanged(IMediaPlayer mp, int width, int height, int sar_num, int sar_den) {
             LogUtil.d("onVideoSizeChanged ——> width：" + width + "， height：" + height);
-            mTextureView.resetVideoSize(width, height);
+            mTextureView.adaptVideoSize(width, height);
         }
     };
 
