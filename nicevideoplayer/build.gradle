@@ -1,13 +1,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 25
-        versionCode 14
-        versionName '1.4'
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -24,12 +24,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestCompile(rootProject.ext.dependencies.espresso, {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile rootProject.ext.dependencies.appcompatV7
+    compile rootProject.ext.dependencies.junit
     //  required, enough for most devices.
     compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.0'
     compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.0'
@@ -40,4 +39,103 @@ dependencies {
     //  compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.0'
     //  ExoPlayer as IMediaPlayer: optional, experimental
     //  compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.0'
+}
+
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+def siteUrl = 'https://github.com/xiaoyanger0825/NiceVideoPlayer' // 项目的主页
+def gitUrl = 'https://github.com/xiaoyanger0825/NiceVideoPlayer' // Git仓库的url
+//发布到组织名称名字，必须填写
+group = "com.xiaomark.nicevideoplayer"
+//发布到JCenter上的项目名字，必须填写
+def libName = "nicevideoplayer"
+// 版本号，下次更新是只需要更改版本号即可
+version = rootProject.ext.android.versionName
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    pkg {
+        userOrg = 'xiaomark' //自己创建的organization名称
+        repo = 'nicevideoplayer'//自己创建的仓库名字
+        name = 'nicevideoplayer'//上传到JCenter的名字,最终引用的名字
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ['Apache-2.0']//不能随便写，只能是仓库创建时选择的license type
+        publish = true // 是否是公开项目，公开别人可以引用
+
+        version {
+            name = rootProject.ext.android.versionName
+            desc = 'a video player libarary for android.'//描述，自己定义
+            released = new Date()
+            vcsTag = rootProject.ext.android.versionName
+            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+    configurations = ['archives']
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
+                // Add your description here
+                name 'nicevideoplayer'
+                description 'a video player libarary for android.'
+                url siteUrl
+                // Set your license
+                licenses {
+                    license {
+                        name 'Apache-2.0' //和之前自己定义的协议一致
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'xiaoyanger0825'        //填写bintray或者github的用户名
+                        name 'xiaojianjun'         //姓名
+                        email 'xiaojianjun0825@aliyun.com'//邮箱
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+    failOnError false //必须添加以免出错
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+javadoc {
+    options {
+        //如果你的项目里面有中文注释的话，必须将格式设置为UTF-8，不然会出现乱码
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        author true
+        version true
+        links "http://docs.oracle.com/javase/7/docs/api"
+    }
 }

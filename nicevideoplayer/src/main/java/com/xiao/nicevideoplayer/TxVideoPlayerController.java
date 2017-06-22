@@ -13,12 +13,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.xiao.nicevideoplayer.NiceVideoPlayerController;
-import com.xiao.nicevideoplayer.NiceUtil;
-import com.xiao.nicevideoplayer.NiceVideoPlayer;
-import com.xiao.nicevideoplayer.R;
-
 /**
  * Created by XiaoJianjun on 2017/6/21.
  * 仿腾讯视频播放器控制器
@@ -124,12 +118,8 @@ public class TxVideoPlayerController
         mTitle.setText(title);
     }
 
-    public void setImage(String imageUrl) {
-        Glide.with(mContext)
-                .load(imageUrl)
-                .placeholder(R.drawable.img_default)
-                .crossFade()
-                .into(mImage);
+    public ImageView imageView() {
+        return mImage;
     }
 
     public void setImage(@DrawableRes int resId) {

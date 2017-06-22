@@ -3,6 +3,7 @@ package com.xiao.nicevieoplayer.example.adapter.holder;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.xiao.nicevideoplayer.NiceVideoPlayer;
 import com.xiao.nicevideoplayer.TxVideoPlayerController;
 import com.xiao.nicevieoplayer.R;
@@ -28,7 +29,11 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
 
     public void bindData(Video video) {
         mController.setTitle(video.getTitle());
-        mController.setImage(video.getImageUrl());
+        Glide.with(itemView.getContext())
+                .load(video.getImageUrl())
+                .placeholder(R.drawable.img_default)
+                .crossFade()
+                .into(mController.imageView());
 
         mVideoPlayer.setController(mController);
         mVideoPlayer.setUp(video.getVideoUrl(), null);
