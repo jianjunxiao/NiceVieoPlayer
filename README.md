@@ -35,7 +35,8 @@ dependencies {
       mNiceVideoPlayer = (NiceVideoPlayer) findViewById(R.id.nice_video_player);
       mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.PLAYER_TYPE_IJK); // or NiceVideoPlayer.PLAYER_NATIVE
       mNiceVideoPlayer.setUp(mVideoUrl, null);
-      NiceVideoPlayerController controller = new NiceVideoPlayerController(this);
+      // 默认的控制器，如需自定义，可继承NiceVideoPlayer自己实现
+      TxVideoPlayerController controller = new TxVideoPlayerController(this);
       controller.setTitle(mTitle);
       controller.setImage(mImageUrl);
       mNiceVideoPlayer.setController(controller);
@@ -87,6 +88,33 @@ mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttach
         }
     }
 });
+```
+3.自定义控制界面
+
+```
+public class CustomController extends NiceVideoPlayerController {
+    // 实现自己的控制界面
+    ...
+}
+
+... 
+
+public class MainActivity extends AppCompatActivity {
+
+    private NiceVideoPlayer mNiceVideoPlayer;
+
+      @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_main);
+            // 使用自定义的CustomContorller
+            mNiceVideoPlayer = (NiceVideoPlayer) findViewById(R.id.nice_video_player);
+            CustomContorller controller = new CostomController(this);
+            ...// mNiceVideoPlayerh和controller的其他设置
+            mNiceVideoPlayer.setController(controller);
+        }
+}
+  
 ```
 ### Proguard
 ```
