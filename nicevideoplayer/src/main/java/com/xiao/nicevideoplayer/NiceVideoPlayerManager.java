@@ -20,6 +20,10 @@ public class NiceVideoPlayerManager {
         return sInstance;
     }
 
+    public NiceVideoPlayer getCurrentNiceVideoPlayer() {
+        return mVideoPlayer;
+    }
+
     public void setCurrentNiceVideoPlayer(NiceVideoPlayer videoPlayer) {
         if (mVideoPlayer != videoPlayer) {
             releaseNiceVideoPlayer();

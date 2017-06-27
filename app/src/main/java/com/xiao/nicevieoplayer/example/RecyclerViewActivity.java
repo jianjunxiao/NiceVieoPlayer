@@ -41,8 +41,8 @@ public class RecyclerViewActivity extends AppCompatActivity {
             @Override
             public void onChildViewDetachedFromWindow(View view) {
                 NiceVideoPlayer niceVideoPlayer = (NiceVideoPlayer) view.findViewById(R.id.nice_video_player);
-                if (niceVideoPlayer != null) {
-                    niceVideoPlayer.release();
+                if (niceVideoPlayer == NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer()) {
+                    NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
                 }
             }
         });
