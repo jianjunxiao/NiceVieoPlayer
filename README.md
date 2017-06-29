@@ -25,7 +25,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.5'
+    compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.6'
 }
 ```
 

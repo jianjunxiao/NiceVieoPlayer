@@ -319,12 +319,6 @@ public class NiceVideoPlayer extends FrameLayout
                     break;
             }
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
-            mMediaPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChangedListener);
-            mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
-            mMediaPlayer.setOnErrorListener(mOnErrorListener);
-            mMediaPlayer.setOnInfoListener(mOnInfoListener);
-            mMediaPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
         }
     }
 
@@ -357,6 +351,14 @@ public class NiceVideoPlayer extends FrameLayout
     private void openMediaPlayer() {
         // 屏幕常量
         mContainer.setKeepScreenOn(true);
+        // 设置监听
+        mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
+        mMediaPlayer.setOnVideoSizeChangedListener(mOnVideoSizeChangedListener);
+        mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
+        mMediaPlayer.setOnErrorListener(mOnErrorListener);
+        mMediaPlayer.setOnInfoListener(mOnInfoListener);
+        mMediaPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
+        // 设置dataSource
         try {
             mMediaPlayer.setDataSource(mContext.getApplicationContext(), Uri.parse(mUrl), mHeaders);
             if (mSurface == null) {
