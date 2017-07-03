@@ -6,7 +6,7 @@
  * 完美切换小窗口、全屏，可在RecyclerView、ListView中无缝全屏.
  * 手势滑动调节播放进度、亮度、声音.
  * 可自定义控制界面
- 
+
 ### Usage
 下载niceviewoplayer库，在AndroidSutio中作为Mudule添加依赖。
 
@@ -25,10 +25,7 @@ dependencies {
 }
 ```
 
-### Note
-
-* 在Activity中使用时，该Activity需要继承自AppCompatActivity
-* 在Fragment中使用时，外层的Activity也同样需要继承自AppCompatActivity
+**在Activity中使用时，该Activity需要继承自AppCompatActivity，在Fragment中使用时，外层的Activity也同样需要继承自AppCompatActivity**
 
 1.在Activity中使用：
 ```
