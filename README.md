@@ -29,6 +29,11 @@ dependencies {
 }
 ```
 
+### Note
+
+在Activity中使用时，该Activity需要继承自AppCompatActivity
+在Fragment中使用时，外层的Activity也同意需要继承自AppCompatActivity
+
 1.在Activity中使用：
 ```
  private void init() {
