@@ -1,15 +1,11 @@
 # NiceVieoPlayer
 ### Features
 
- 用IjkPlayer/MediaPlayer + TextureView封装，可切换IjkPlayer、MediaPlayer.
- 
- 支持本地和网络视频播放.
- 
- 完美切换小窗口、全屏，可在RecyclerView、ListView中无缝全屏.
- 
- 手势滑动调节播放进度、亮度、声音.
- 
- 可自定义控制界面
+ * 用IjkPlayer/MediaPlayer + TextureView封装，可切换IjkPlayer、MediaPlayer.
+ * 支持本地和网络视频播放.
+ * 完美切换小窗口、全屏，可在RecyclerView、ListView中无缝全屏.
+ * 手势滑动调节播放进度、亮度、声音.
+ * 可自定义控制界面
  
 ### Usage
 下载niceviewoplayer库，在AndroidSutio中作为Mudule添加依赖。
