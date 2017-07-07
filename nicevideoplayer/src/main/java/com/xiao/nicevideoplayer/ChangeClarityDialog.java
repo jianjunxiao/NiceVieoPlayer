@@ -2,10 +2,12 @@ package com.xiao.nicevideoplayer;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,9 +42,19 @@ public class ChangeClarityDialog extends Dialog {
         });
 
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                NiceUtil.getScreenHeight(context),
-                NiceUtil.getScreenWidth(context));
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.MarginLayoutParams.MATCH_PARENT);
         setContentView(mLinearLayout, params);
+
+        WindowManager.LayoutParams windowParams = getWindow().getAttributes();
+        windowParams.width = NiceUtil.getScreenHeight(context);
+        windowParams.height = NiceUtil.getScreenWidth(context);
+        getWindow().setAttributes(windowParams);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     /**
