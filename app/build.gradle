@@ -20,7 +20,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    
+
     productFlavors {
     }
 }
@@ -37,4 +37,5 @@ dependencies {
     testCompile rootProject.ext.dependencies.junit
     compile rootProject.ext.dependencies.recyclerview
     compile rootProject.ext.dependencies.glide
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 }

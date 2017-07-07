@@ -1,9 +1,13 @@
 package com.xiao.nicevideoplayer;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.os.CountDownTimer;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,14 +17,23 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import static android.R.attr.level;
+
 /**
  * Created by XiaoJianjun on 2017/6/21.
- * 仿腾讯视频播放器控制器.
+ * 仿腾讯视频热点列表页播放器控制器.
  */
 public class TxVideoPlayerController
         extends NiceVideoPlayerController
         implements View.OnClickListener,
-        SeekBar.OnSeekBarChangeListener {
+        SeekBar.OnSeekBarChangeListener,
+        ChangeClarityDialog.OnClarityChangedListener {
 
     private Context mContext;
     private ImageView mImage;
@@ -29,13 +42,19 @@ public class TxVideoPlayerController
     private LinearLayout mTop;
     private ImageView mBack;
     private TextView mTitle;
+    private LinearLayout mBatteryTime;
+    private ImageView mBattery;
+    private TextView mTime;
 
     private LinearLayout mBottom;
     private ImageView mRestartPause;
     private TextView mPosition;
     private TextView mDuration;
     private SeekBar mSeek;
+    private TextView mClarity;
     private ImageView mFullScreen;
+
+    private TextView mLength;
 
     private LinearLayout mLoading;
     private TextView mLoadText;
@@ -60,7 +79,12 @@ public class TxVideoPlayerController
     private boolean topBottomVisible;
     private CountDownTimer mDismissTopBottomCountDownTimer;
 
-    public TxVideoPlayerController(@NonNull Context context) {
+    private List<Clarity> clarities;
+    private int defaultClarityIndex;
+
+    private ChangeClarityDialog mClarityDialog;
+
+    public TxVideoPlayerController(Context context) {
         super(context);
         mContext = context;
         init();
@@ -75,6 +99,9 @@ public class TxVideoPlayerController
         mTop = (LinearLayout) findViewById(R.id.top);
         mBack = (ImageView) findViewById(R.id.back);
         mTitle = (TextView) findViewById(R.id.title);
+        mBatteryTime = (LinearLayout) findViewById(R.id.battery_time);
+        mBattery = (ImageView) findViewById(R.id.battery);
+        mTime = (TextView) findViewById(R.id.time);
 
         mBottom = (LinearLayout) findViewById(R.id.bottom);
         mRestartPause = (ImageView) findViewById(R.id.restart_or_pause);
@@ -82,6 +109,8 @@ public class TxVideoPlayerController
         mDuration = (TextView) findViewById(R.id.duration);
         mSeek = (SeekBar) findViewById(R.id.seek);
         mFullScreen = (ImageView) findViewById(R.id.full_screen);
+        mClarity = (TextView) findViewById(R.id.clarity);
+        mLength = (TextView) findViewById(R.id.length);
 
         mLoading = (LinearLayout) findViewById(R.id.loading);
         mLoadText = (TextView) findViewById(R.id.load_text);
@@ -107,6 +136,7 @@ public class TxVideoPlayerController
         mBack.setOnClickListener(this);
         mRestartPause.setOnClickListener(this);
         mFullScreen.setOnClickListener(this);
+        mClarity.setOnClickListener(this);
         mRetry.setOnClickListener(this);
         mReplay.setOnClickListener(this);
         mShare.setOnClickListener(this);
@@ -114,16 +144,59 @@ public class TxVideoPlayerController
         this.setOnClickListener(this);
     }
 
+    @Override
     public void setTitle(String title) {
         mTitle.setText(title);
     }
 
+    @Override
     public ImageView imageView() {
         return mImage;
     }
 
+    @Override
     public void setImage(@DrawableRes int resId) {
         mImage.setImageResource(resId);
+    }
+
+    @Override
+    public void setLenght(long length) {
+        mLength.setText(NiceUtil.formatTime(length));
+    }
+
+    @Override
+    public void setNiceVideoPlayer(INiceVideoPlayer niceVideoPlayer) {
+        super.setNiceVideoPlayer(niceVideoPlayer);
+        // 给播放器配置视频链接地址
+        if (clarities != null && clarities.size() > 1) {
+            mNiceVideoPlayer.setUp(clarities.get(defaultClarityIndex).videoUrl, null);
+        }
+    }
+
+    /**
+     * 设置清晰度
+     *
+     * @param clarities 清晰度及链接
+     */
+    public void setClarity(List<Clarity> clarities, int defaultClarityIndex) {
+        if (clarities != null && clarities.size() > 1) {
+            this.clarities = clarities;
+            this.defaultClarityIndex = defaultClarityIndex;
+
+            List<String> clarityGrades = new ArrayList<>();
+            for (Clarity clarity : clarities) {
+                clarityGrades.add(clarity.grade + " " + clarity.p);
+            }
+            mClarity.setText(clarities.get(defaultClarityIndex).grade);
+            // 初始化切换清晰度对话框
+            mClarityDialog = new ChangeClarityDialog(mContext);
+            mClarityDialog.setClarityGrade(clarityGrades, defaultClarityIndex);
+            mClarityDialog.setOnClarityCheckedListener(this);
+            // 给播放器配置视频链接地址
+            if (mNiceVideoPlayer != null) {
+                mNiceVideoPlayer.setUp(clarities.get(defaultClarityIndex).videoUrl, null);
+            }
+        }
     }
 
     @Override
@@ -138,7 +211,9 @@ public class TxVideoPlayerController
                 mError.setVisibility(View.GONE);
                 mCompleted.setVisibility(View.GONE);
                 mTop.setVisibility(View.GONE);
+                mBottom.setVisibility(View.GONE);
                 mCenterStart.setVisibility(View.GONE);
+                mLength.setVisibility(View.GONE);
                 break;
             case NiceVideoPlayer.STATE_PREPARED:
                 startUpdateProgressTimer();
@@ -181,21 +256,66 @@ public class TxVideoPlayerController
     }
 
     @Override
-    protected void onPlayerStateChanged(int playerState) {
-        switch (playerState) {
-            case NiceVideoPlayer.PLAYER_NORMAL:
+    protected void onPlayModeChanged(int playMode) {
+        switch (playMode) {
+            case NiceVideoPlayer.MODE_NORMAL:
                 mBack.setVisibility(View.GONE);
                 mFullScreen.setImageResource(R.drawable.ic_player_enlarge);
+                mFullScreen.setVisibility(View.VISIBLE);
+                mClarity.setVisibility(View.GONE);
+                mBatteryTime.setVisibility(View.GONE);
+                mContext.unregisterReceiver(mBatterReceiver);
                 break;
-            case NiceVideoPlayer.PLAYER_FULL_SCREEN:
+            case NiceVideoPlayer.MODE_FULL_SCREEN:
                 mBack.setVisibility(View.VISIBLE);
+                mFullScreen.setVisibility(View.GONE);
                 mFullScreen.setImageResource(R.drawable.ic_player_shrink);
+                if (clarities != null && clarities.size() > 1) {
+                    mClarity.setVisibility(View.VISIBLE);
+                }
+                mBatteryTime.setVisibility(View.VISIBLE);
+                mContext.registerReceiver(mBatterReceiver,
+                        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
                 break;
-            case NiceVideoPlayer.PLAYER_TINY_WINDOW:
+            case NiceVideoPlayer.MODE_TINY_WINDOW:
                 mBack.setVisibility(View.VISIBLE);
+                mClarity.setVisibility(View.GONE);
                 break;
         }
     }
+
+    /**
+     * 电池状态即电量变化广播接收器
+     */
+    private BroadcastReceiver mBatterReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
+                    BatteryManager.BATTERY_STATUS_UNKNOWN);
+            if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
+                // 充电中
+                mBattery.setImageResource(R.drawable.battery_charging);
+            } else if (status == BatteryManager.BATTERY_STATUS_FULL) {
+                // 充电完成
+                mBattery.setImageResource(R.drawable.battery_full);
+            } else {
+                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+                int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 0);
+                int percentage = (int) (((float) level / scale) * 100);
+                if (percentage <= 10) {
+                    mBattery.setImageResource(R.drawable.battery_10);
+                } else if (percentage <= 20) {
+                    mBattery.setImageResource(R.drawable.battery_20);
+                } else if (percentage <= 50) {
+                    mBattery.setImageResource(R.drawable.battery_50);
+                } else if (percentage <= 80) {
+                    mBattery.setImageResource(R.drawable.battery_80);
+                } else if (percentage <= 100) {
+                    mBattery.setImageResource(R.drawable.battery_100);
+                }
+            }
+        }
+    };
 
     @Override
     protected void reset() {
@@ -211,6 +331,8 @@ public class TxVideoPlayerController
         mBottom.setVisibility(View.GONE);
         mFullScreen.setImageResource(R.drawable.ic_player_enlarge);
 
+        mLength.setVisibility(View.VISIBLE);
+
         mTop.setVisibility(View.VISIBLE);
         mBack.setVisibility(View.GONE);
 
@@ -221,7 +343,7 @@ public class TxVideoPlayerController
 
     /**
      * 尽量不要在onClick中直接处理控件的隐藏、显示及各种UI逻辑。
-     * UI相关的逻辑都尽量到{@link #onPlayStateChanged}和{@link #onPlayerStateChanged}中处理.
+     * UI相关的逻辑都尽量到{@link #onPlayStateChanged}和{@link #onPlayModeChanged}中处理.
      */
     @Override
     public void onClick(View v) {
@@ -247,6 +369,9 @@ public class TxVideoPlayerController
             } else if (mNiceVideoPlayer.isFullScreen()) {
                 mNiceVideoPlayer.exitFullScreen();
             }
+        } else if (v == mClarity) {
+            setTopBottomVisible(false); // 隐藏top、bottom
+            mClarityDialog.show();     // 显示清晰度对话框
         } else if (v == mRetry) {
             mNiceVideoPlayer.restart();
         } else if (v == mReplay) {
@@ -263,6 +388,28 @@ public class TxVideoPlayerController
         }
     }
 
+    @Override
+    public void onClarityChanged(int clarityIndex) {
+        // 根据切换后的清晰度索引值，设置对应的视频链接地址，并从当前播放位置接着播放
+        Clarity clarity = clarities.get(clarityIndex);
+        mClarity.setText(clarity.grade);
+        long currentPosition = mNiceVideoPlayer.getCurrentPosition();
+        mNiceVideoPlayer.releasePlayer();
+        mNiceVideoPlayer.setUp(clarity.videoUrl, null);
+        mNiceVideoPlayer.start(currentPosition);
+    }
+
+    @Override
+    public void onClarityNotChanged() {
+        // 清晰度没有变化，对话框消失后，需要重新显示出top、bottom
+        setTopBottomVisible(true);
+    }
+
+    /**
+     * 设置top、bottom的显示和隐藏
+     *
+     * @param visible true显示，false隐藏.
+     */
     private void setTopBottomVisible(boolean visible) {
         mTop.setVisibility(visible ? View.VISIBLE : View.GONE);
         mBottom.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -276,6 +423,9 @@ public class TxVideoPlayerController
         }
     }
 
+    /**
+     * 开启top、bottom自动消失的timer
+     */
     private void startDismissTopBottomTimer() {
         cancelDismissTopBottomTimer();
         if (mDismissTopBottomCountDownTimer == null) {
@@ -294,6 +444,9 @@ public class TxVideoPlayerController
         mDismissTopBottomCountDownTimer.start();
     }
 
+    /**
+     * 取消top、bottom自动消失的timer
+     */
     private void cancelDismissTopBottomTimer() {
         if (mDismissTopBottomCountDownTimer != null) {
             mDismissTopBottomCountDownTimer.cancel();
@@ -330,6 +483,8 @@ public class TxVideoPlayerController
         mSeek.setProgress(progress);
         mPosition.setText(NiceUtil.formatTime(position));
         mDuration.setText(NiceUtil.formatTime(duration));
+        // 更新时间
+        mTime.setText(new SimpleDateFormat("HH:mm", Locale.CHINA).format(new Date()));
     }
 
     @Override

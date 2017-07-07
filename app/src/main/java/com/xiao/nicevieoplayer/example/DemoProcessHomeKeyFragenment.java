@@ -1,33 +1,44 @@
 package com.xiao.nicevieoplayer.example;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.xiao.nicevideoplayer.NiceVideoPlayer;
 import com.xiao.nicevideoplayer.NiceVideoPlayerManager;
 import com.xiao.nicevieoplayer.R;
 import com.xiao.nicevieoplayer.example.adapter.VideoAdapter;
+import com.xiao.nicevieoplayer.example.base.CompatHomeKeyFragment;
 import com.xiao.nicevieoplayer.example.util.DataUtil;
 
-public class RecyclerViewActivity extends AppCompatActivity {
+/**
+ * Created by XiaoJianjun on 2017/7/7.
+ * 如果你需要在播放的时候按下Home键能暂停，回调此Fragment又继续的话，需要继承自CompatHomeKeyFragment
+ */
+public class DemoProcessHomeKeyFragenment extends CompatHomeKeyFragment {
 
     private RecyclerView mRecyclerView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recycler_view);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.layout_fragment_demo, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         init();
     }
 
     private void init() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
-        VideoAdapter adapter = new VideoAdapter(this, DataUtil.getVideoListData());
+        VideoAdapter adapter = new VideoAdapter(getActivity(), DataUtil.getVideoListData());
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
@@ -43,17 +54,5 @@ public class RecyclerViewActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (NiceVideoPlayerManager.instance().onBackPressd()) return;
-        super.onBackPressed();
     }
 }

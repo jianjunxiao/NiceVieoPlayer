@@ -12,17 +12,46 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".example.MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait">
+        <activity android:name=".example.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
+            android:name=".example.TinyWindowPlayActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="可使用小窗口模式播放"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".example.RecyclerViewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="在RecylerView视频列表中"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".example.ChangeClarityActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="在全屏时可以切换清晰度"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".example.UseInFragActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="在fragment中使用"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:label="Activity中时处理播放时按下Home键"
+            android:name=".example.ProcessHome1Activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:label="Fragment中时处理播放时按下Home键"
+            android:name=".example.ProcessHome2Activity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait">
         </activity>

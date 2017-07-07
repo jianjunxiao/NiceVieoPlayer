@@ -7,32 +7,45 @@
     android:orientation="vertical"
     tools:context="com.xiao.nicevieoplayer.example.MainActivity">
 
-    <com.xiao.nicevideoplayer.NiceVideoPlayer
-        android:layout_marginBottom="8dp"
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:id="@+id/nice_video_player"
+        android:onClick="tinyWindow"
+        android:text="小窗口"/>
+
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="180dp"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="changeClarity"
+        android:text="全屏切换清晰度"/>
 
-    <LinearLayout
+    <Button
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:layout_weight="2">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="videoList"
+        android:text="视频列表"/>
 
-        <Button
-            android:onClick="enterTinyWindow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="小窗口播放"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="useInFragment"
+        android:text="在Fragment中使用"/>
 
-        <Button
-            android:onClick="showVideoList"
-            android:layout_width="match_parent"
-            android:text="视频列表"
-            android:layout_marginTop="16dp"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="processHomeKeyInActivity"
+        android:text="Activity中时处理播放时按下Home键"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="processHomeKeyInFragment"
+        android:text="Fragment中时处理播放时按下Home键"/>
 </LinearLayout>

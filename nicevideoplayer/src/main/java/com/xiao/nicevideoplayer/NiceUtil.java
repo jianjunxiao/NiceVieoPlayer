@@ -83,6 +83,16 @@ public class NiceUtil {
     }
 
     /**
+     * 获取屏幕高度
+     *
+     * @param context
+     * @return heiht of the screen.
+     */
+    public static int getScreenHeight(Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
+    }
+
+    /**
      * dp转px
      *
      * @param context

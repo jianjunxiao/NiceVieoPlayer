@@ -2,10 +2,12 @@ package com.xiao.nicevideoplayer;
 
 import android.content.Context;
 import android.provider.Settings;
+import android.support.annotation.DrawableRes;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,6 +47,31 @@ public abstract class NiceVideoPlayerController
     }
 
     /**
+     * 设置播放的视频的标题
+     *
+     * @param title 视频标题
+     */
+    public abstract void setTitle(String title);
+
+    /**
+     * 视频底图
+     *
+     * @param resId 视频底图资源
+     */
+    public abstract void setImage(@DrawableRes int resId);
+
+    /**
+     * 视频底图ImageView控件，提供给外部用图片加载工具来加载网络图片
+     *
+     * @return 底图ImageView
+     */
+    public abstract ImageView imageView();
+
+    /**
+     * 设置总时长.
+     */
+    public abstract void setLenght(long length);
+    /**
      * 当播放器的播放状态发生变化，在此方法中国你更新不同的播放状态的UI
      *
      * @param playState 播放状态：
@@ -63,16 +90,16 @@ public abstract class NiceVideoPlayerController
     protected abstract void onPlayStateChanged(int playState);
 
     /**
-     * 当播放器的状态发生变化，在此方法中更新不同状态下的控制器界面。
+     * 当播放器的播放模式发生变化，在此方法中更新不同模式下的控制器界面。
      *
-     * @param playerState 播放器的状态：
+     * @param playMode 播放器的模式：
      *                    <ul>
-     *                    <li>{@link NiceVideoPlayer#PLAYER_NORMAL}</li>
-     *                    <li>{@link NiceVideoPlayer#PLAYER_FULL_SCREEN}</li>
-     *                    <li>{@link NiceVideoPlayer#PLAYER_TINY_WINDOW}</li>
+     *                    <li>{@link NiceVideoPlayer#MODE_NORMAL}</li>
+     *                    <li>{@link NiceVideoPlayer#MODE_FULL_SCREEN}</li>
+     *                    <li>{@link NiceVideoPlayer#MODE_TINY_WINDOW}</li>
      *                    </ul>
      */
-    protected abstract void onPlayerStateChanged(int playerState);
+    protected abstract void onPlayModeChanged(int playMode);
 
     /**
      * 重置控制器，将控制器恢复到初始状态。
@@ -124,6 +151,10 @@ public abstract class NiceVideoPlayerController
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+        // 只有全屏的时候才能拖动位置、亮度、声音
+        if (!mNiceVideoPlayer.isFullScreen()) {
+            return false;
+        }
         // 只有在播放、暂停、缓冲的时候能够拖动改变位置、亮度和声音
         if (mNiceVideoPlayer.isIdle()
                 || mNiceVideoPlayer.isError()

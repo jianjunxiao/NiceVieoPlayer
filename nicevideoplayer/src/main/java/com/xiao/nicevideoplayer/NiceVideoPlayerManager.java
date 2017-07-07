@@ -31,13 +31,13 @@ public class NiceVideoPlayerManager {
         }
     }
 
-    public void pauseNiceVideoPlayer() {
+    public void suspendNiceVideoPlayer() {
         if (mVideoPlayer != null && (mVideoPlayer.isPlaying() || mVideoPlayer.isBufferingPlaying())) {
             mVideoPlayer.pause();
         }
     }
 
-    public void restartNiceVideoPlayer() {
+    public void resumeNiceVideoPlayer() {
         if (mVideoPlayer != null && (mVideoPlayer.isPaused() || mVideoPlayer.isBufferingPaused())) {
             mVideoPlayer.restart();
         }
@@ -56,9 +56,6 @@ public class NiceVideoPlayerManager {
                 return mVideoPlayer.exitFullScreen();
             } else if (mVideoPlayer.isTinyWindow()) {
                 return mVideoPlayer.exitTinyWindow();
-            } else {
-                mVideoPlayer.release();
-                return false;
             }
         }
         return false;
