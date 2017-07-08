@@ -81,6 +81,8 @@ public class TxVideoPlayerController
 
     private ChangeClarityDialog mClarityDialog;
 
+    private boolean hasRegisterBatteryReceiver; // 是否已经注册了电池广播
+
     public TxVideoPlayerController(Context context) {
         super(context);
         mContext = context;
@@ -261,7 +263,10 @@ public class TxVideoPlayerController
                 mFullScreen.setVisibility(View.VISIBLE);
                 mClarity.setVisibility(View.GONE);
                 mBatteryTime.setVisibility(View.GONE);
-                mContext.unregisterReceiver(mBatterReceiver);
+                if (hasRegisterBatteryReceiver) {
+                    mContext.unregisterReceiver(mBatterReceiver);
+                    hasRegisterBatteryReceiver = false;
+                }
                 break;
             case NiceVideoPlayer.MODE_FULL_SCREEN:
                 mBack.setVisibility(View.VISIBLE);
@@ -271,8 +276,11 @@ public class TxVideoPlayerController
                     mClarity.setVisibility(View.VISIBLE);
                 }
                 mBatteryTime.setVisibility(View.VISIBLE);
-                mContext.registerReceiver(mBatterReceiver,
-                        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                if (!hasRegisterBatteryReceiver) {
+                    mContext.registerReceiver(mBatterReceiver,
+                            new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                    hasRegisterBatteryReceiver = true;
+                }
                 break;
             case NiceVideoPlayer.MODE_TINY_WINDOW:
                 mBack.setVisibility(View.VISIBLE);
