@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.CountDownTimer;
 import android.support.annotation.DrawableRes;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -22,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import static android.R.attr.level;
 
 /**
  * Created by XiaoJianjun on 2017/6/21.
