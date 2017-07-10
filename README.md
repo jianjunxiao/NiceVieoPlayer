@@ -25,7 +25,9 @@ dependencies {
     compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.7'
 }
 ```
-**在对应视频界面所在的Activity的Manifest.xml中需要添加如下配置：`android:configChanges="orientation|keyboardHidden|screenSize"`**
+**在对应视频界面所在的Activity的Manifest.xml中需要添加如下配置：**
+```android:configChanges="orientation|keyboardHidden|screenSize"
+```
 
 #### 1.在Activity中使用
 在Activity中使用时，该Activity需要继承自`AppCompatActivity`，在onStop中需要释放播放器，并且要在onBackPress中处理按下返回键的逻辑：
