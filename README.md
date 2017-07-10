@@ -26,7 +26,8 @@ dependencies {
 }
 ```
 **在对应视频界面所在的Activity的Manifest.xml中需要添加如下配置：**
-```android:configChanges="orientation|keyboardHidden|screenSize"
+```
+android:configChanges="orientation|keyboardHidden|screenSize"
 ```
 
 #### 1.在Activity中使用
