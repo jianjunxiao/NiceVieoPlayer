@@ -12,7 +12,6 @@ android:
   licenses:
     - 'android-sdk-license.*'
 
-
 # Emulator Management: Create, Start and Wait
 before_script:
   - chmod +x gradlew
