@@ -22,7 +22,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.7'
+    compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.8'
 }
 ```
 **在对应视频界面所在的Activity的Manifest.xml中需要添加如下配置：**
