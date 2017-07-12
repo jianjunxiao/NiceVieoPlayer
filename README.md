@@ -1,4 +1,7 @@
 # NiceVieoPlayer
+
+[![](https://jitpack.io/v/xiaoyanger0825/NiceVieoPlayer.svg)](https://jitpack.io/#xiaoyanger0825/NiceVieoPlayer)
+
 ### Features
 
  * 用IjkPlayer/MediaPlayer + TextureView封装，可切换IjkPlayer、MediaPlayer.
