@@ -1,6 +1,6 @@
 # NiceVieoPlayer
 
-[![](https://jitpack.io/v/xiaoyanger0825/NiceVieoPlayer.svg)](https://jitpack.io/#xiaoyanger0825/NiceVieoPlayer) [![API](https://img.shields.io/badge/API-16%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=16)
+[![](https://jitpack.io/v/xiaoyanger0825/NiceVieoPlayer.svg)](https://jitpack.io/#xiaoyanger0825/NiceVieoPlayer) [![API](https://img.shields.io/badge/API-16%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=16) [![作者](https://img.shields.io/badge/%E4%BD%9C%E8%80%85-xiaoyanger0825-orange.svg)](https://github.com/xiaoyanger0825/NiceVieoPlayer)
 ### Features
 
  * 用IjkPlayer/MediaPlayer + TextureView封装，可切换IjkPlayer、MediaPlayer.
