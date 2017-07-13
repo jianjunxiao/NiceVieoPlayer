@@ -11,7 +11,7 @@
  * 可自定义控制界面.
 
 ### Usage
-下载niceviewoplayer库，在AndroidSutio中作为Mudule添加依赖。
+下载niceviewoplayer库，在AndroidStudio中作为Mudule添加依赖。
 
 或者在Gradle中添加依赖：
 
