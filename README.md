@@ -24,7 +24,7 @@ allprojects {
 }
 
 dependencies {
-    compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.8'
+    compile 'com.github.xiaoyanger0825:NiceVieoPlayer:v1.9'
 }
 ```
 **在对应视频界面所在的Activity的Manifest.xml中需要添加如下配置：**
@@ -122,15 +122,10 @@ public List<Clarity> getClarites() {
 #### 4.在RecyclerView列表中使用
 在ReclerView列表中使用时需要监听itemView的detach，以此释放掉对应的播放器
 ```
-mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+mRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
     @Override
-    public void onChildViewAttachedToWindow(View view) {
-
-    }
-
-    @Override
-    public void onChildViewDetachedFromWindow(View view) {
-        NiceVideoPlayer niceVideoPlayer = (NiceVideoPlayer) view.findViewById(R.id.nice_video_player);
+    public void onViewRecycled(RecyclerView.ViewHolder holder) {
+        NiceVideoPlayer niceVideoPlayer = ((VideoViewHolder) holder).mVideoPlayer;
         if (niceVideoPlayer == NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer()) {
             NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
         }

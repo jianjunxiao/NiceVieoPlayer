@@ -3,12 +3,12 @@ package com.xiao.nicevieoplayer.example;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.xiao.nicevideoplayer.NiceVideoPlayer;
 import com.xiao.nicevideoplayer.NiceVideoPlayerManager;
 import com.xiao.nicevieoplayer.R;
 import com.xiao.nicevieoplayer.example.adapter.VideoAdapter;
+import com.xiao.nicevieoplayer.example.adapter.holder.VideoViewHolder;
 import com.xiao.nicevieoplayer.example.base.CompatHomeKeyActivity;
 import com.xiao.nicevieoplayer.example.util.DataUtil;
 
@@ -33,15 +33,10 @@ public class ProcessHome1Activity extends CompatHomeKeyActivity {
         mRecyclerView.setHasFixedSize(true);
         VideoAdapter adapter = new VideoAdapter(this, DataUtil.getVideoListData());
         mRecyclerView.setAdapter(adapter);
-        mRecyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+        mRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
             @Override
-            public void onChildViewAttachedToWindow(View view) {
-
-            }
-
-            @Override
-            public void onChildViewDetachedFromWindow(View view) {
-                NiceVideoPlayer niceVideoPlayer = (NiceVideoPlayer) view.findViewById(R.id.nice_video_player);
+            public void onViewRecycled(RecyclerView.ViewHolder holder) {
+                NiceVideoPlayer niceVideoPlayer = ((VideoViewHolder) holder).mVideoPlayer;
                 if (niceVideoPlayer == NiceVideoPlayerManager.instance().getCurrentNiceVideoPlayer()) {
                     NiceVideoPlayerManager.instance().releaseNiceVideoPlayer();
                 }

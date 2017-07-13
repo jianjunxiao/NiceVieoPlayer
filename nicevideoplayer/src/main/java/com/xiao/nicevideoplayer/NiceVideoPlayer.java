@@ -130,10 +130,10 @@ public class NiceVideoPlayer extends FrameLayout
     }
 
     public void setController(NiceVideoPlayerController controller) {
+        mContainer.removeView(mController);
         mController = controller;
         mController.reset();
         mController.setNiceVideoPlayer(this);
-        mContainer.removeView(mController);
         LayoutParams params = new LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
