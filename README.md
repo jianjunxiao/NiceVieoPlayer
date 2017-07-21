@@ -120,7 +120,7 @@ public List<Clarity> getClarites() {
 详细参考demo中的`ChangeClarityActivity`
 
 #### 4.在RecyclerView列表中使用
-在ReclerView列表中使用时需要监听itemView的detach，以此释放掉对应的播放器
+在ReclerView列表中使用时需要监听itemView回收，以此释放掉对应的播放器
 ```
 mRecyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
     @Override
