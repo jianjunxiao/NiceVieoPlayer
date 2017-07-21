@@ -13,7 +13,6 @@ public class ProcessHome2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_process_home2);
 
-
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.container, new DemoProcessHomeKeyFragenment())

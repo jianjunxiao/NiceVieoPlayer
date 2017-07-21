@@ -48,6 +48,12 @@
             android:label="Activity中时处理播放时按下Home键"
             android:screenOrientation="portrait">
         </activity>
+        <activity
+            android:name=".example.ProcessHome2Activity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="Fragment中时处理播放时按下Home键"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
