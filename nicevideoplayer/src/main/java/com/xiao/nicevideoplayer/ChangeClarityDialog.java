@@ -52,11 +52,6 @@ public class ChangeClarityDialog extends Dialog {
         getWindow().setAttributes(windowParams);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
     /**
      * 设置清晰度等级
      *
