@@ -477,10 +477,13 @@ public class NiceVideoPlayer extends FrameLayout
             = new IMediaPlayer.OnErrorListener() {
         @Override
         public boolean onError(IMediaPlayer mp, int what, int extra) {
-            mCurrentState = STATE_ERROR;
-            mController.onPlayStateChanged(mCurrentState);
-            LogUtil.d("onError ——> STATE_ERROR ———— what：" + what);
-            return false;
+            // 直播流播放时去调用mediaPlayer.getDuration会导致-38和-2147483648错误，忽略该错误
+            if (what != -38 && what != -2147483648 && extra != -38 && extra != -2147483648) {
+                mCurrentState = STATE_ERROR;
+                mController.onPlayStateChanged(mCurrentState);
+                LogUtil.d("onError ——> STATE_ERROR ———— what：" + what + ", extra: " + extra);
+            }
+            return true;
         }
     };
 
@@ -521,6 +524,8 @@ public class NiceVideoPlayer extends FrameLayout
                     mTextureView.setRotation(extra);
                     LogUtil.d("视频旋转角度：" + extra);
                 }
+            } else if (what == IMediaPlayer.MEDIA_INFO_NOT_SEEKABLE) {
+                LogUtil.d("视频不能seekTo，为直播视频");
             } else {
                 LogUtil.d("onInfo ——> what：" + what);
             }
