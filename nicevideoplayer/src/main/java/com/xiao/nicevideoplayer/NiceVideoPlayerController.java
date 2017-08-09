@@ -1,7 +1,6 @@
 package com.xiao.nicevideoplayer;
 
 import android.content.Context;
-import android.provider.Settings;
 import android.support.annotation.DrawableRes;
 import android.view.MotionEvent;
 import android.view.View;
@@ -32,7 +31,7 @@ public abstract class NiceVideoPlayerController
     private boolean mNeedChangeBrightness;
     private static final int THRESHOLD = 80;
     private long mGestureDownPosition;
-    private int mGestureDownBrightness;
+    private float mGestureDownBrightness;
     private int mGestureDownVolume;
     private long mNewPosition;
 
@@ -71,6 +70,7 @@ public abstract class NiceVideoPlayerController
      * 设置总时长.
      */
     public abstract void setLenght(long length);
+
     /**
      * 当播放器的播放状态发生变化，在此方法中国你更新不同的播放状态的UI
      *
@@ -93,11 +93,11 @@ public abstract class NiceVideoPlayerController
      * 当播放器的播放模式发生变化，在此方法中更新不同模式下的控制器界面。
      *
      * @param playMode 播放器的模式：
-     *                    <ul>
-     *                    <li>{@link NiceVideoPlayer#MODE_NORMAL}</li>
-     *                    <li>{@link NiceVideoPlayer#MODE_FULL_SCREEN}</li>
-     *                    <li>{@link NiceVideoPlayer#MODE_TINY_WINDOW}</li>
-     *                    </ul>
+     *                 <ul>
+     *                 <li>{@link NiceVideoPlayer#MODE_NORMAL}</li>
+     *                 <li>{@link NiceVideoPlayer#MODE_FULL_SCREEN}</li>
+     *                 <li>{@link NiceVideoPlayer#MODE_TINY_WINDOW}</li>
+     *                 </ul>
      */
     protected abstract void onPlayModeChanged(int playMode);
 
@@ -191,13 +191,8 @@ public abstract class NiceVideoPlayerController
                         if (mDownX < getWidth() * 0.5f) {
                             // 左侧改变亮度
                             mNeedChangeBrightness = true;
-                            try {
-                                mGestureDownBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
-                            } catch (Settings.SettingNotFoundException e) {
-                                e.printStackTrace();
-                                mNeedChangeBrightness = false;
-                                LogUtil.e("获取当前亮度失败", e);
-                            }
+                            mGestureDownBrightness = NiceUtil.scanForActivity(mContext)
+                                    .getWindow().getAttributes().screenBrightness;
                         } else {
                             // 右侧改变声音
                             mNeedChangeVolume = true;
@@ -214,10 +209,10 @@ public abstract class NiceVideoPlayerController
                 }
                 if (mNeedChangeBrightness) {
                     deltaY = -deltaY;
-                    float deltaBrightness = 255 * deltaY * 3 / getHeight();
+                    float deltaBrightness = deltaY * 3 / getHeight();
                     float newBrightness = mGestureDownBrightness + deltaBrightness;
-                    newBrightness = Math.max(1, Math.min(newBrightness, 255));
-                    float newBrightnessPercentage = newBrightness / 255f;
+                    newBrightness = Math.max(0, Math.min(newBrightness, 1));
+                    float newBrightnessPercentage = newBrightness;
                     WindowManager.LayoutParams params = NiceUtil.scanForActivity(mContext)
                             .getWindow().getAttributes();
                     params.screenBrightness = newBrightnessPercentage;
