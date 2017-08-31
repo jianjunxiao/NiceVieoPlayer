@@ -66,6 +66,12 @@ public interface INiceVideoPlayer {
      */
     void continueFromLastPosition(boolean continueFromLastPosition);
 
+    /**
+     * 设置全屏时activity 方向
+     * @param orietation
+     */
+    void setFullscreenOriatation(int orietation);
+
     /*********************************
      * 以下9个方法是播放器在当前的播放状态
      **********************************/
