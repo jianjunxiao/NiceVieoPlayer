@@ -1,6 +1,6 @@
 language: android
 jdk: oraclejdk8
-
+sudo: false
 android:
   components:
     - tools
@@ -8,6 +8,7 @@ android:
     - android-25
     - extra-android-m2repository
     - extra-android-support
+    - sys-img-armeabi-v7a-android-25
 
   licenses:
     - 'android-sdk-license.*'
@@ -16,7 +17,7 @@ android:
 before_script:
   - chmod +x gradlew
 
-  - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+  - echo no | android create avd --force -n test -t android-25 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
