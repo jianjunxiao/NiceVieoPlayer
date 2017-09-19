@@ -80,7 +80,7 @@ public interface INiceVideoPlayer {
     boolean isCompleted();
 
     /*********************************
-     * 以下93个方法是播放器的模式
+     * 以下3个方法是播放器的模式
      **********************************/
     boolean isFullScreen();
     boolean isTinyWindow();

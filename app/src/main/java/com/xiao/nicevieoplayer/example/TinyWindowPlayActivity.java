@@ -1,6 +1,7 @@
 package com.xiao.nicevieoplayer.example;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
@@ -24,8 +25,9 @@ public class TinyWindowPlayActivity extends AppCompatActivity {
 
     private void init() {
         mNiceVideoPlayer = (NiceVideoPlayer) findViewById(R.id.nice_video_player);
-        mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_IJK); // IjkPlayer or MediaPlayer
-        mNiceVideoPlayer.setUp("http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-33-30.mp4", null);
+        mNiceVideoPlayer.setPlayerType(NiceVideoPlayer.TYPE_NATIVE); // IjkPlayer or MediaPlayer
+        String videoUrl = Environment.getExternalStorageDirectory().getPath().concat("/办公室小野.mp4");
+        mNiceVideoPlayer.setUp(videoUrl, null);
         TxVideoPlayerController controller = new TxVideoPlayerController(this);
         controller.setTitle("办公室小野开番外了，居然在办公室开澡堂！老板还点赞？");
         controller.setLenght(98000);

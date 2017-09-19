@@ -360,6 +360,11 @@ public class NiceVideoPlayer extends FrameLayout
                 case TYPE_IJK:
                 default:
                     mMediaPlayer = new IjkMediaPlayer();
+                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "analyzemaxduration", 100L);
+                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "probesize", 10240L);
+                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "flush_packets", 1L);
+                    ((IjkMediaPlayer)mMediaPlayer).setOption(4, "packet-buffering", 0L);
+                    ((IjkMediaPlayer)mMediaPlayer).setOption(4, "framedrop", 1L);
                     break;
             }
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -393,7 +398,7 @@ public class NiceVideoPlayer extends FrameLayout
     }
 
     private void openMediaPlayer() {
-        // 屏幕常量
+        // 屏幕常亮
         mContainer.setKeepScreenOn(true);
         // 设置监听
         mMediaPlayer.setOnPreparedListener(mOnPreparedListener);
@@ -468,7 +473,7 @@ public class NiceVideoPlayer extends FrameLayout
             mCurrentState = STATE_COMPLETED;
             mController.onPlayStateChanged(mCurrentState);
             LogUtil.d("onCompletion ——> STATE_COMPLETED");
-            // 清除屏幕常量
+            // 清除屏幕常亮
             mContainer.setKeepScreenOn(false);
         }
     };
