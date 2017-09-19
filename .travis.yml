@@ -13,6 +13,8 @@ android:
 
 licenses:
     - 'android-sdk-license.*'
+before_install:
+  - chmod +x gradlew
 before_script:
   - android list targets
   - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
