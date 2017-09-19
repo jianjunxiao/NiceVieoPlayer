@@ -17,6 +17,8 @@ android:
   - extra-android-m2repository
   - extra-google-m2repository  # Removed duplicated component
 
+licenses:
+    - 'android-sdk-license.*'
 before_script:
   - android list targets
   - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
@@ -24,7 +26,9 @@ before_script:
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
 
-script:
-  - ./gradlew test
-  - ./gradlew connectedAndroidTest
-script: "./travis-build.sh"
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
