@@ -360,11 +360,11 @@ public class NiceVideoPlayer extends FrameLayout
                 case TYPE_IJK:
                 default:
                     mMediaPlayer = new IjkMediaPlayer();
-                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "analyzemaxduration", 100L);
-                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "probesize", 10240L);
-                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "flush_packets", 1L);
-                    ((IjkMediaPlayer)mMediaPlayer).setOption(4, "packet-buffering", 0L);
-                    ((IjkMediaPlayer)mMediaPlayer).setOption(4, "framedrop", 1L);
+//                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "analyzemaxduration", 100L);
+//                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "probesize", 10240L);
+//                    ((IjkMediaPlayer)mMediaPlayer).setOption(1, "flush_packets", 1L);
+//                    ((IjkMediaPlayer)mMediaPlayer).setOption(4, "packet-buffering", 0L);
+//                    ((IjkMediaPlayer)mMediaPlayer).setOption(4, "framedrop", 1L);
                     break;
             }
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
