@@ -475,6 +475,8 @@ public class NiceVideoPlayer extends FrameLayout
             LogUtil.d("onCompletion ——> STATE_COMPLETED");
             // 清除屏幕常亮
             mContainer.setKeepScreenOn(false);
+            // 重置当前播放进度
+            NiceUtil.savePlayPosition(getContext(), mUrl, 0);
         }
     };
 
