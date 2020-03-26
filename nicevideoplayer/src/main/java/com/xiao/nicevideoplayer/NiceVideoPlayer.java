@@ -104,6 +104,7 @@ public class NiceVideoPlayer extends FrameLayout
     private int mBufferPercentage;
     private boolean continueFromLastPosition = true;
     private long skipToPosition;
+    private int mOrietation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
     public NiceVideoPlayer(Context context) {
         this(context, null);
@@ -157,6 +158,11 @@ public class NiceVideoPlayer extends FrameLayout
     @Override
     public void continueFromLastPosition(boolean continueFromLastPosition) {
         this.continueFromLastPosition = continueFromLastPosition;
+    }
+
+    @Override
+    public void setFullscreenOriatation(int orietation) {
+        this.mOrietation = orietation;
     }
 
     @Override
@@ -558,7 +564,7 @@ public class NiceVideoPlayer extends FrameLayout
         // 隐藏ActionBar、状态栏，并横屏
         NiceUtil.hideActionBar(mContext);
         NiceUtil.scanForActivity(mContext)
-                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                .setRequestedOrientation(mOrietation);
 
         ViewGroup contentView = (ViewGroup) NiceUtil.scanForActivity(mContext)
                 .findViewById(android.R.id.content);

@@ -1,5 +1,6 @@
 package com.xiao.nicevieoplayer.example.adapter.holder;
 
+import android.content.pm.ActivityInfo;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
     public VideoViewHolder(View itemView) {
         super(itemView);
         mVideoPlayer = (NiceVideoPlayer) itemView.findViewById(R.id.nice_video_player);
+        mVideoPlayer.setFullscreenOriatation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // 将列表中的每个视频设置为默认16:9的比例
         ViewGroup.LayoutParams params = mVideoPlayer.getLayoutParams();
         params.width = itemView.getResources().getDisplayMetrics().widthPixels; // 宽度为屏幕宽度
