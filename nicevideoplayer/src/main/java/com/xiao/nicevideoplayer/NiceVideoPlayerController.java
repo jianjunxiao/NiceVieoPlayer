@@ -1,7 +1,7 @@
 package com.xiao.nicevideoplayer;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;

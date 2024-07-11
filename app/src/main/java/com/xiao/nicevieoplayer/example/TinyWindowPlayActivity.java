@@ -1,8 +1,8 @@
 package com.xiao.nicevieoplayer.example;
 
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,7 +34,7 @@ public class TinyWindowPlayActivity extends AppCompatActivity {
         controller.setLenght(98000);
         Glide.with(this)
                 .load("http://tanzi27niu.cdsb.mobi/wps/wp-content/uploads/2017/05/2017-05-17_17-30-43.jpg")
-                .placeholder(R.drawable.img_default)
+//                .placeholder(R.drawable.img_default)
                 .crossFade()
                 .into(controller.imageView());
         mNiceVideoPlayer.setController(controller);

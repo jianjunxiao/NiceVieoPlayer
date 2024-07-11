@@ -11,7 +11,7 @@ android {
         versionCode rootProject.ext.android.versionCode
         versionName rootProject.ext.android.versionName
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
         ndk {
             abiFilters 'armeabi', 'armeabi-v7a', 'x86'
@@ -29,24 +29,25 @@ android {
         abortOnError false
     }
 
-    productFlavors {
-    }
+    productFlavors {}
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile(rootProject.ext.dependencies.espresso, {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    /*androidTestCompile(rootProject.ext.dependencies.espresso, {
         exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile rootProject.ext.dependencies.appcompatV7
-    compile rootProject.ext.dependencies.junit
-    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.3'
-//    compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.3'
-    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.3'
-    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.3'
-//    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.3'
-    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.3'
-//    compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.3'
+    })*/
+    implementation rootProject.ext.dependencies.appcompatV7
+    implementation rootProject.ext.dependencies.junit
+    def ijk = "0.8.8"
+    //版本查看  https://github.com/bilibili/ijkplayer
+    implementation "tv.danmaku.ijk.media:ijkplayer-java:${ijk}"
+//    implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.3'
+    implementation "tv.danmaku.ijk.media:ijkplayer-armv7a:${ijk}"
+//    implementation 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.3'
+    implementation "tv.danmaku.ijk.media:ijkplayer-arm64:${ijk}"
+//    implementation 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.3'
+//    implementation 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.3'
 }
 
 //apply plugin: 'com.github.dcendents.android-maven'

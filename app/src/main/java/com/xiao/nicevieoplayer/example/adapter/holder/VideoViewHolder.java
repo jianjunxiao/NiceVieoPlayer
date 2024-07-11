@@ -1,6 +1,6 @@
 package com.xiao.nicevieoplayer.example.adapter.holder;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,7 +39,7 @@ public class VideoViewHolder extends RecyclerView.ViewHolder {
         mController.setLenght(video.getLength());
         Glide.with(itemView.getContext())
                 .load(video.getImageUrl())
-                .placeholder(R.drawable.img_default)
+//                .placeholder(R.drawable.img_default)
                 .crossFade()
                 .into(mController.imageView());
         mVideoPlayer.setUp(video.getVideoUrl(), null);

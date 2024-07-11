@@ -1,10 +1,10 @@
 ext {
 
     android = [
-            compileSdkVersion: 25,
+            compileSdkVersion: 28,
             buildToolsVersion: "25.0.2",
-            minSdkVersion    : 16,
-            targetSdkVersion : 25,
+            minSdkVersion    : 21,
+            targetSdkVersion : 28,
             versionCode      : 22,
             versionName      : "2.2"
     ]
@@ -16,12 +16,12 @@ ext {
     dependencies = [
             // support
             supportV4    : "com.android.support:support-v4:${dependVersion.support}",
-            appcompatV7  : "com.android.support:appcompat-v7:${dependVersion.support}",
-            recyclerview : "com.android.support:recyclerview-v7:${dependVersion.support}",
+            appcompatV7  : 'androidx.appcompat:appcompat:1.0.0',
+            recyclerview : 'androidx.recyclerview:recyclerview:1.0.0',
             design       : "com.android.support:design:${dependVersion.support}",
             // 测试
             junit        : "junit:junit:4.12",
-            espresso     : "com.android.support.test.espresso:espresso-core:2.2.2",
+            espresso     : 'androidx.test.espresso:espresso-core:3.1.0',
             // 第三方
             rxpermissions: "com.tbruyelle.rxpermissions2:rxpermissions:0.9.4@aar",
             rxjava       : "io.reactivex.rxjava2:rxjava:2.1.0",

@@ -11,7 +11,7 @@ android {
         targetSdkVersion rootProject.ext.android.targetSdkVersion
         versionCode rootProject.ext.android.versionCode
         versionName rootProject.ext.android.versionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     buildTypes {
@@ -31,14 +31,14 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile(rootProject.ext.dependencies.espresso, {
+    /*androidTestCompile(rootProject.ext.dependencies.espresso, {
         exclude group: 'com.android.support', module: 'support-annotations'
-    })
+    })*/
     compile project(':nicevideoplayer')
     compile rootProject.ext.dependencies.appcompatV7
     compile rootProject.ext.dependencies.rxpermissions
     compile rootProject.ext.dependencies.rxjava
-    testCompile rootProject.ext.dependencies.junit
+//    testCompile rootProject.ext.dependencies.junit
     compile rootProject.ext.dependencies.recyclerview
     compile rootProject.ext.dependencies.glide
 }

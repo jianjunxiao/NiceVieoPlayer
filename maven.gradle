@@ -1,0 +1,29 @@
+static def addCommonMaven(RepositoryHandler handler) {
+    handler.maven { url 'https://repo1.maven.org/maven2' }
+    handler.maven {
+        url 'https://artifact.bytedance.com/repository/pangle'
+    }
+    handler.maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+    handler.maven {
+        url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_support/"
+    }
+
+    // 阿里云云效仓库：https://maven.aliyun.com/mvn/guide
+    handler.maven { url 'https://maven.aliyun.com/repository/public' }
+    handler.maven { url 'https://maven.aliyun.com/repository/google' }
+    // 华为开源镜像：https://mirrors.huaweicloud.com
+    handler.maven { url 'https://repo.huaweicloud.com/repository/maven' }
+    // JitPack 远程仓库：https://jitpack.io
+    handler.maven { url 'https://jitpack.io' }
+    // hms， 若不集成华为厂商通道，可直接跳过
+//    handler.maven { url 'https://developer.huawei.com/repo/' }
+    // fcm， 若不集成 FCM 通道，可直接跳过
+//    handler.maven { url "https://maven.google.com" }
+    // MavenCentral 远程仓库：https://mvnrepository.com
+    handler.mavenCentral()
+    handler.google()
+    // noinspection JcenterRepositoryObsolete
+    handler.jcenter()
+}
+
+ext.addCommonMaven = this.&addCommonMaven
